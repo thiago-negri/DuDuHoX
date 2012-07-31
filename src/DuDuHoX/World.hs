@@ -1,8 +1,7 @@
 module DuDuHoX.World where
 
-import Control.Monad (mplus)
+import Control.Monad
 import DuDuHoX.Game
-import Data.Maybe
 
 data WorldPosition =
     WorldPosition {
