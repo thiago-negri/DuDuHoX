@@ -9,3 +9,8 @@ Working so far:
 #. Quitting (Q)
 #. Winning (Moving on top of '!')
 #. World parsing (DuDuHoX.World.parseWorld)
+
+TODO:
+#. Fog of war / line of sight.
+#. World scrolling.
+#. Keys & doors.
