@@ -62,34 +62,37 @@ handleUserInput world (Movement m) = do
 drawWorld :: World -> IO ()
 drawWorld world = do
     mapM_ drawWall walls
-    drawPlayer $ playerPosition player 
+    drawPlayer player 
     drawExit
     where
         walls = worldWalls world
         player = worldPlayer world
         exit = worldExit world
-        drawWall wall = '#' `drawAt` wallPosition wall 
-        drawExit = '!' `drawAt` exitPosition exit
+        drawWall wall = wall `drawAt` wallPosition wall 
+        drawExit = exit `drawAt` exitPosition exit
 
 drawUpdate :: World -> World -> WorldUpdate -> IO ()
 drawUpdate oldWorld newWorld (PlayerMove _) =
     when (oldPosition /= newPosition) $ do
         clearPosition oldPosition
-        drawPlayer newPosition
+        drawPlayer newPlayer
     where
          newPosition = playerPosition newPlayer 
          newPlayer = worldPlayer newWorld
          oldPosition = playerPosition oldPlayer
          oldPlayer = worldPlayer oldWorld
 
-drawPlayer :: WorldPosition -> IO ()
-drawPlayer position = '@' `drawAt` position
-
 clearPosition :: WorldPosition -> IO ()
-clearPosition position  = ' ' `drawAt` position
+clearPosition position  = ' ' `charAt` position
 
-drawAt :: Char -> WorldPosition -> IO ()
-char `drawAt` position = setCursorPosition (y position) (x position) >> putChar char
+drawPlayer :: WorldPlayer -> IO ()
+drawPlayer player = player `drawAt` playerPosition player
+
+drawAt :: (ShowConsole a) => a -> WorldPosition -> IO ()
+a `drawAt` position = showConsole a `charAt` position
+
+charAt :: Char -> WorldPosition -> IO ()
+char `charAt` position = setCursorPosition (y position) (x position) >> putChar char
 
 getInput :: IO (Maybe GameInput)
 getInput = do
@@ -103,3 +106,15 @@ parseGameInput 'a' = Just $ Movement MoveLeft
 parseGameInput 'd' = Just $ Movement MoveRight
 parseGameInput 'q' = Just Quit
 parseGameInput _ = Nothing
+
+class ShowConsole a where
+    showConsole :: a -> Char
+
+instance ShowConsole WorldPlayer where
+    showConsole _ = '@'
+    
+instance ShowConsole WorldWall where
+    showConsole _ = '#'
+    
+instance ShowConsole WorldExit where
+    showConsole _ = '!'
