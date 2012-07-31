@@ -1,4 +1,11 @@
-DuDuHoX
-=======
+= DuDuHoX =
 
 Making a maze game in order to learn Haskell.
+
+== Progress ==
+
+Working so far:
+#. Movement (W, A, S, D)
+#. Quitting (Q)
+#. Winning (Moving on top of '!')
+#. World parsing (DuDuHoX.World.parseWorld)
