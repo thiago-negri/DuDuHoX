@@ -54,9 +54,7 @@ consolePause = getChar >> void getChar -- Maldito Windows (buffering do console)
 handleUserInput :: World -> GameInput -> IO ()
 handleUserInput _ Quit = return ()
 handleUserInput world (Movement m) = do
-    case worldUpdate of
-        Just update -> drawUpdate world world' update
-        Nothing -> return ()
+    maybe (return ()) (drawUpdate world world') worldUpdate
     interactWithUser world'
     where
         (world', worldUpdate) = runUpdate world (PlayerMove m)
