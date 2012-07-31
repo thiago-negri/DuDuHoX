@@ -61,21 +61,19 @@ handleUserInput world (Movement m) = do
 
 drawWorld :: World -> IO ()
 drawWorld world = do
-    mapM_ drawWall walls
-    drawPlayer player 
-    drawExit
+    mapM_ draw walls
+    draw player
+    draw exit
     where
         walls = worldWalls world
         player = worldPlayer world
         exit = worldExit world
-        drawWall wall = wall `drawAt` wallPosition wall 
-        drawExit = exit `drawAt` exitPosition exit
 
 drawUpdate :: World -> World -> WorldUpdate -> IO ()
 drawUpdate oldWorld newWorld (PlayerMove _) =
     when (oldPosition /= newPosition) $ do
         clearPosition oldPosition
-        drawPlayer newPlayer
+        draw newPlayer
     where
          newPosition = playerPosition newPlayer 
          newPlayer = worldPlayer newWorld
@@ -83,16 +81,13 @@ drawUpdate oldWorld newWorld (PlayerMove _) =
          oldPlayer = worldPlayer oldWorld
 
 clearPosition :: WorldPosition -> IO ()
-clearPosition position  = ' ' `charAt` position
+clearPosition = putCharAt ' '
 
-drawPlayer :: WorldPlayer -> IO ()
-drawPlayer player = player `drawAt` playerPosition player
+draw :: (ShowConsole a, WorldObject a) => a -> IO ()
+draw a = putCharAt (showConsole a) (worldPosition a)
 
-drawAt :: (ShowConsole a) => a -> WorldPosition -> IO ()
-a `drawAt` position = showConsole a `charAt` position
-
-charAt :: Char -> WorldPosition -> IO ()
-char `charAt` position = setCursorPosition (y position) (x position) >> putChar char
+putCharAt :: Char -> WorldPosition -> IO ()
+putCharAt char position = setCursorPosition (y position) (x position) >> putChar char
 
 getInput :: IO (Maybe GameInput)
 getInput = do

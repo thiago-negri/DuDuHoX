@@ -93,3 +93,15 @@ runUpdate world update@(PlayerMove move) = (maybeNewWorld, maybeWorldUpdate)
                 then newWorld
                 else world
         newWorld = world{worldPlayer=player{playerPosition=newPosition}}
+
+class WorldObject a where
+    worldPosition :: a -> WorldPosition
+
+instance WorldObject WorldWall where
+    worldPosition = wallPosition
+
+instance WorldObject WorldExit where
+    worldPosition = exitPosition
+
+instance WorldObject WorldPlayer where
+    worldPosition = playerPosition
