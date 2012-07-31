@@ -1,6 +1,8 @@
 module DuDuHoX.World where
 
 import Control.Monad (mplus)
+import DuDuHoX.Game
+import Data.Maybe
 
 data WorldPosition =
     WorldPosition {
@@ -29,6 +31,11 @@ data World =
         worldPlayer :: WorldPlayer,
         worldWalls :: [WorldWall],
         worldExit :: WorldExit
+    }
+
+data WorldUpdate =
+    PlayerMove {
+        moveDirection :: MoveDirection
     }
 
 parseWorld :: [String] -> Maybe World
@@ -65,4 +72,25 @@ indexated :: [a] -> [(Int, a)]
 indexated = zip [0..]
 
 (|+|) :: WorldPosition -> WorldPosition -> WorldPosition
-WorldPosition x y |+| WorldPosition x' y' = WorldPosition (x + x') (y + y')
+a |+| b = WorldPosition (x a + x b) (y a + y b)
+
+runUpdate :: World -> WorldUpdate -> (World, Maybe WorldUpdate)
+runUpdate world update@(PlayerMove move) = (maybeNewWorld, maybeWorldUpdate)
+    where
+        newPosition = playerPosition player |+| delta move
+        delta MoveUp = WorldPosition 0 (-1)
+        delta MoveDown = WorldPosition 0 1
+        delta MoveLeft = WorldPosition (-1) 0
+        delta MoveRight = WorldPosition 1 0
+        validNewPosition = not $ any ((newPosition ==) . wallPosition) walls
+        walls = worldWalls world
+        player = worldPlayer world
+        maybeWorldUpdate = 
+            if validNewPosition
+                then Just update
+                else Nothing
+        maybeNewWorld =
+            if validNewPosition
+                then newWorld
+                else world
+        newWorld = world{worldPlayer=player{playerPosition=newPosition}}
