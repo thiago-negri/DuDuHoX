@@ -105,3 +105,6 @@ instance WorldObject WorldExit where
 
 instance WorldObject WorldPlayer where
     worldPosition = playerPosition
+
+distance :: WorldPosition -> WorldPosition -> Int
+distance a b = abs (x a - x b) + abs (y a - y b)

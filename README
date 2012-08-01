@@ -1,16 +1,20 @@
-= DuDuHoX =
+* DuDuHoX
 
 Making a maze game in order to learn Haskell.
 
-== Progress ==
+** Progress
 
-Working so far:
-#. Movement (W, A, S, D)
-#. Quitting (Q)
-#. Winning (Moving on top of '!')
-#. World parsing (DuDuHoX.World.parseWorld)
+*** Working:
+- Movement (W, A, S, D)
+- Quitting (Q)
+- Winning (Moving on top of '!')
+- World parsing (DuDuHoX.World.parseWorld)
 
-TODO:
-#. Fog of war / line of sight.
-#. World scrolling.
-#. Keys & doors.
+*** Work in progress:
+- Fog of war / line of sight.
+  - Objects in a view distance greater than or equal to five are not drawn.
+  - Need to add view-obstacle detection.
+
+*** Things to do:
+- World scrolling.
+- Keys & doors.

@@ -25,8 +25,11 @@ consoleFree = do
 gameLoop :: World -> IO ()
 gameLoop world = do
     clearScreen
-    drawWorld world
+    -- drawWorld world
+    draw player
+    drawVision player world
     interactWithUser world
+    where player = worldPlayer world
 
 interactWithUser :: World -> IO ()
 interactWithUser world =
@@ -74,6 +77,7 @@ drawUpdate oldWorld newWorld (PlayerMove _) =
     when (oldPosition /= newPosition) $ do
         clearPosition oldPosition
         draw newPlayer
+        drawVision newPlayer newWorld
     where
          newPosition = playerPosition newPlayer 
          newPlayer = worldPlayer newWorld
@@ -85,6 +89,16 @@ clearPosition = putCharAt ' '
 
 draw :: (ShowConsole a, WorldObject a) => a -> IO ()
 draw a = putCharAt (showConsole a) (worldPosition a)
+
+drawVision :: (WorldObject a) => a -> World -> IO ()
+drawVision viewer world = do
+    mapM_ (\wall -> when (inSight wall) $ draw wall) walls
+    when (inSight exit) $ draw exit 
+    where
+        walls = worldWalls world
+        exit = worldExit world
+        inSight worldObject = distance (worldPosition worldObject) viewerPosition < 5 
+        viewerPosition = worldPosition viewer
 
 putCharAt :: Char -> WorldPosition -> IO ()
 putCharAt char position = setCursorPosition (y position) (x position) >> putChar char

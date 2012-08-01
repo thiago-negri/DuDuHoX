@@ -5,23 +5,48 @@ import Data.Maybe
 import DuDuHoX.Console
 import DuDuHoX.World
 
-textWorld :: [String]
-textWorld = [
-    "############################",
-    "# @  #                   ! #",
-    "#### # #####################",
-    "   # # #",
-    "   # # #",
-    "   #   #",
-    "   #####"
+easyWorld :: [String]
+easyWorld = [
+    "############",
+    "# @      ! #",
+    "############"
+    ]
+    
+fowTest :: [String]
+fowTest = [
+    "####################################",
+    "# @                       #      ! #",
+    "#          #                       #",
+    "#                                  #",
+    "#   #                 #            #",
+    "#                                  #",
+    "####################################"
+    ]
+    
+maze :: [String]
+maze = [
+    "#########",
+    "#@#     #",
+    "# # ### #",
+    "#    #  #",
+    "#### ## #",
+    "#    #  #",
+    "# #### ##",
+    "# #  # #",
+    "#   ## #",
+    "#####  #",
+    "#!    ##",
+    "########"
     ]
 
 world :: World
-world = fromJust $ parseWorld textWorld
+world = fromJust . parseWorld $
+    --easyWorld
+    --fowTest
+    maze
 
 main :: IO ()
 main = do
     consoleInit
     gameLoop world
     consoleFree
-    
