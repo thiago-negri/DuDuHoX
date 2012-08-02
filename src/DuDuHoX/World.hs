@@ -1,6 +1,5 @@
 module DuDuHoX.World where
 
-import Control.Monad
 import DuDuHoX.Game
 
 data WorldPosition =
@@ -36,37 +35,6 @@ data WorldUpdate =
     PlayerMove {
         moveDirection :: MoveDirection
     }
-
-parseWorld :: [String] -> Maybe World
-parseWorld worldLines = do 
-    player <- mPlayer
-    exit <- mExit
-    return World{worldPlayer = player, worldWalls = walls, worldExit = exit}
-    where 
-        (mPlayer, mExit, walls) = parseWorldInfo worldLines
-
-parseWorldInfo :: [String] -> (Maybe WorldPlayer, Maybe WorldExit, [WorldWall])
-parseWorldInfo worldLines = foldl f (Nothing, Nothing, []) indexatedWorldLines
-    where
-        f a = combine a . parseWorldLineInfo  
-        combine (p, e, w) (p', e', w') = (p `mplus` p', e `mplus` e', w ++ w')
-        indexatedWorldLines = indexated worldLines
-    
-parseWorldLineInfo :: (Int, String) -> (Maybe WorldPlayer, Maybe WorldExit, [WorldWall])
-parseWorldLineInfo worldLine = go (Nothing, Nothing, []) $ indexated . snd $ worldLine
-    where
-        go acc [] = acc
-        go acc@(p, e, w) ((x, c):etc) = 
-            let position = WorldPosition x y in
-                case c of
-                    '#' -> go (p, e, WorldWall{wallPosition = position} : w) etc
-                    '@' -> go (p `mplus` Just WorldPlayer{playerPosition = position}, e, w) etc
-                    '!' -> go (p, e `mplus` Just WorldExit{exitPosition = position}, w) etc
-                    _ -> go acc etc
-        y = fst worldLine
-
-indexated :: [a] -> [(Int, a)]
-indexated = zip [0..]
 
 (|+|) :: WorldPosition -> WorldPosition -> WorldPosition
 a |+| b = WorldPosition (x a + x b) (y a + y b)

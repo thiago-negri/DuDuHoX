@@ -16,5 +16,6 @@ executable DuDuHoX
                    DuDuHoX.World,
                    Main,
                    DuDuHoX.Console,
-                   DuDuHoX.Game
+                   DuDuHoX.Game,
+                   DuDuHoX.World.Builder
 
