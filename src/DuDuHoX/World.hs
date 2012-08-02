@@ -46,14 +46,12 @@ parseWorld worldLines = do
         (mPlayer, mExit, walls) = parseWorldInfo worldLines
 
 parseWorldInfo :: [String] -> (Maybe WorldPlayer, Maybe WorldExit, [WorldWall])
-parseWorldInfo worldLines = go (Nothing, Nothing, []) indexatedWorldLines
+parseWorldInfo worldLines = foldl f (Nothing, Nothing, []) indexatedWorldLines
     where
-        go acc [] = acc
-        go (p, e, w) (line:etc) =
-            let (p', e', w') = parseWorldLineInfo line in
-                go (p `mplus` p', e `mplus` e', w ++ w') etc
+        f a = combine a . parseWorldLineInfo  
+        combine (p, e, w) (p', e', w') = (p `mplus` p', e `mplus` e', w ++ w')
         indexatedWorldLines = indexated . map indexated $ worldLines
-
+    
 parseWorldLineInfo :: (Int, [(Int, Char)]) -> (Maybe WorldPlayer, Maybe WorldExit, [WorldWall])
 parseWorldLineInfo worldLine = go (Nothing, Nothing, []) $ snd worldLine
     where
