@@ -50,10 +50,10 @@ parseWorldInfo worldLines = foldl f (Nothing, Nothing, []) indexatedWorldLines
     where
         f a = combine a . parseWorldLineInfo  
         combine (p, e, w) (p', e', w') = (p `mplus` p', e `mplus` e', w ++ w')
-        indexatedWorldLines = indexated . map indexated $ worldLines
+        indexatedWorldLines = indexated worldLines
     
-parseWorldLineInfo :: (Int, [(Int, Char)]) -> (Maybe WorldPlayer, Maybe WorldExit, [WorldWall])
-parseWorldLineInfo worldLine = go (Nothing, Nothing, []) $ snd worldLine
+parseWorldLineInfo :: (Int, String) -> (Maybe WorldPlayer, Maybe WorldExit, [WorldWall])
+parseWorldLineInfo worldLine = go (Nothing, Nothing, []) $ indexated . snd $ worldLine
     where
         go acc [] = acc
         go acc@(p, e, w) ((x, c):etc) = 
