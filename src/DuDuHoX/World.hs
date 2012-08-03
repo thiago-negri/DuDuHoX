@@ -43,8 +43,7 @@ runUpdate :: World -> WorldUpdate -> (World, Maybe WorldUpdate)
 runUpdate world update@(PlayerMove move) = (maybeNewWorld, maybeWorldUpdate)
     where
         newPosition = playerPosition player |+| delta move
-        validNewPosition = not $ any ((newPosition ==) . wallPosition) walls
-        walls = worldWalls world
+        validNewPosition = not $ world `hasAnyWallAt` newPosition
         player = worldPlayer world
         maybeWorldUpdate = 
             if validNewPosition
