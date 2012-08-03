@@ -73,8 +73,23 @@ hasAnyWallBetween world a b = any (hasAnyWallAt world) path
 
 straightPath :: WorldPosition -> WorldPosition -> [WorldPosition]
 straightPath a b | a == b    = []
-                 | otherwise = a : straightPath a' b
-    where a' = a |+| moveDelta a b
+                 | otherwise = f a b repetition
+    where
+        f a b (r:rs) | a == b    = []
+                     | otherwise = let a' = (a |+| delta r) in a : f a' b rs
+        (x, y) = diff a b
+        x' = (abs x) + 1
+        y' = (abs y) + 1
+        repetition | x' > y'   = horizontalRepetition
+                   | x' < y'   = verticalRepetition
+                   | otherwise = diagonalRepetition
+        horizontalRepetition = concat . repeat $ (take (x' `div` y') $ repeat horizontalMove) ++ [verticalMove]
+        horizontalMove = if x < 0 then MoveLeft else MoveRight
+        verticalRepetition = concat . repeat $ (take (y' `div` x') $ repeat verticalMove) ++ [horizontalMove]
+        verticalMove = if y < 0 then MoveUp else MoveDown
+        diagonalRepetition = repeat diagonalMove
+        diagonalMove = if y < 0 then if x < 0 then MoveUpLeft else MoveUpRight
+                                else if x < 0 then MoveDownLeft else MoveDownRight
 
 moveDelta :: WorldPosition -> WorldPosition -> WorldPosition
 moveDelta a b = delta . direction $ diff a b

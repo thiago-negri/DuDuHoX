@@ -9,6 +9,8 @@ Making a maze game in order to learn Haskell.
 - Quitting (Q)
 - Winning (Moving on top of '!')
 - World parsing (DuDuHoX.World.Builder.parseWorld)
+
+*** Work in progress:
 - Line of sight (DuDuHoX.Console.drawVision)
 
 *** Things to do:
