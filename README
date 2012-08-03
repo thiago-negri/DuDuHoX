@@ -8,8 +8,8 @@ Making a maze game in order to learn Haskell.
 - Movement (W, A, S, D)
 - Quitting (Q)
 - Winning (Moving on top of '!')
-- World parsing (DuDuHoX.World.parseWorld)
-- Fog of war / line of sight.
+- World parsing (DuDuHoX.World.Builder.parseWorld)
+- Fog of war / line of sight (DuDuHoX.Console.drawVision)
 
 *** Things to do:
 - Draw objects in sight and objects already seen in a different way.
