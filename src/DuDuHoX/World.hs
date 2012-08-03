@@ -40,19 +40,12 @@ data WorldUpdate =
 a |+| b = WorldPosition (x a + x b) (y a + y b)
 
 runUpdate :: World -> WorldUpdate -> (World, Maybe WorldUpdate)
-runUpdate world update@(PlayerMove move) = (maybeNewWorld, maybeWorldUpdate)
+runUpdate world update@(PlayerMove move) = result
     where
-        newPosition = playerPosition player |+| delta move
+        result = if validNewPosition then (newWorld, Just update) else (world, Nothing)
         validNewPosition = not $ world `hasAnyWallAt` newPosition
+        newPosition = playerPosition player |+| delta move
         player = worldPlayer world
-        maybeWorldUpdate = 
-            if validNewPosition
-                then Just update
-                else Nothing
-        maybeNewWorld =
-            if validNewPosition
-                then newWorld
-                else world
         newWorld = world{worldPlayer=player{playerPosition=newPosition}}
 
 class WorldObject a where
