@@ -92,15 +92,24 @@ delta MoveUp = WorldPosition 0 (-1)
 delta MoveDown = WorldPosition 0 1
 delta MoveLeft = WorldPosition (-1) 0
 delta MoveRight = WorldPosition 1 0
+delta MoveUpLeft = delta MoveUp |+| delta MoveLeft
+delta MoveUpRight = delta MoveUp |+| delta MoveRight
+delta MoveDownLeft = delta MoveDown |+| delta MoveLeft
+delta MoveDownRight = delta MoveDown |+| delta MoveRight
 
 diff :: WorldPosition -> WorldPosition -> (Int, Int)
 diff a b = (x b - x a, y b - y a)
 
 direction :: (Int, Int) -> MoveDirection
 direction (x, y) | x' > y'   = horizontal
+                 | x' == y'  = diagonal
                  | otherwise = vertical
     where
         x' = abs x
         y' = abs y
         horizontal = if x < 0 then MoveLeft else MoveRight
+        diagonal = if x < 0 then if y < 0 then MoveUpLeft
+                                          else MoveDownLeft
+                            else if y < 0 then MoveUpRight
+                                          else MoveDownRight
         vertical = if y < 0 then MoveUp else MoveDown

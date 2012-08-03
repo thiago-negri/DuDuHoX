@@ -9,11 +9,7 @@ Making a maze game in order to learn Haskell.
 - Quitting (Q)
 - Winning (Moving on top of '!')
 - World parsing (DuDuHoX.World.parseWorld)
-
-*** Work in progress:
 - Fog of war / line of sight.
-  - Objects in a view distance greater than or equal to five are not drawn.
-  - Need to add view-obstacle detection.
 
 *** Things to do:
 - Draw objects in sight and objects already seen in a different way.
