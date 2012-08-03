@@ -97,7 +97,7 @@ drawVision viewer world = do
     where
         walls = worldWalls world
         exit = worldExit world
-        inSight worldObject = distance (worldPosition worldObject) viewerPosition < 5 
+        inSight worldObject = not $ hasAnyWallBetween world viewerPosition (worldPosition worldObject) 
         viewerPosition = worldPosition viewer
 
 putCharAt :: Char -> WorldPosition -> IO ()

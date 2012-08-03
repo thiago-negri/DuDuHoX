@@ -7,7 +7,7 @@ data WorldPosition =
         x :: Int,
         y :: Int
     }
-    deriving (Eq)
+    deriving (Eq, Show)
 
 data WorldPlayer =
     WorldPlayer {
@@ -43,10 +43,6 @@ runUpdate :: World -> WorldUpdate -> (World, Maybe WorldUpdate)
 runUpdate world update@(PlayerMove move) = (maybeNewWorld, maybeWorldUpdate)
     where
         newPosition = playerPosition player |+| delta move
-        delta MoveUp = WorldPosition 0 (-1)
-        delta MoveDown = WorldPosition 0 1
-        delta MoveLeft = WorldPosition (-1) 0
-        delta MoveRight = WorldPosition 1 0
         validNewPosition = not $ any ((newPosition ==) . wallPosition) walls
         walls = worldWalls world
         player = worldPlayer world
@@ -74,3 +70,37 @@ instance WorldObject WorldPlayer where
 
 distance :: WorldPosition -> WorldPosition -> Int
 distance a b = abs (x a - x b) + abs (y a - y b)
+
+hasAnyWallAt :: World -> WorldPosition -> Bool
+world `hasAnyWallAt` position = any ((position ==) . wallPosition) walls
+    where walls = worldWalls world
+
+hasAnyWallBetween :: World -> WorldPosition -> WorldPosition -> Bool
+hasAnyWallBetween world a b = any (hasAnyWallAt world) path
+    where path = straightPath a b
+
+straightPath :: WorldPosition -> WorldPosition -> [WorldPosition]
+straightPath a b | a == b    = []
+                 | otherwise = a : straightPath a' b
+    where a' = a |+| moveDelta a b
+
+moveDelta :: WorldPosition -> WorldPosition -> WorldPosition
+moveDelta a b = delta . direction $ diff a b
+
+delta :: MoveDirection -> WorldPosition
+delta MoveUp = WorldPosition 0 (-1)
+delta MoveDown = WorldPosition 0 1
+delta MoveLeft = WorldPosition (-1) 0
+delta MoveRight = WorldPosition 1 0
+
+diff :: WorldPosition -> WorldPosition -> (Int, Int)
+diff a b = (x b - x a, y b - y a)
+
+direction :: (Int, Int) -> MoveDirection
+direction (x, y) | x' > y'   = horizontal
+                 | otherwise = vertical
+    where
+        x' = abs x
+        y' = abs y
+        horizontal = if x < 0 then MoveLeft else MoveRight
+        vertical = if y < 0 then MoveUp else MoveDown
