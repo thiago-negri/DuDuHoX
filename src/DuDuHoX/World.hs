@@ -25,10 +25,16 @@ data WorldExit =
         exitPosition :: WorldPosition
     }
 
+data WorldFloor =
+    WorldFloor {
+        floorPosition :: WorldPosition
+    }
+
 data World =
     World {
         worldPlayer :: WorldPlayer,
         worldWalls :: [WorldWall],
+        worldFloors :: [WorldFloor],
         worldExit :: WorldExit
     }
 
@@ -44,7 +50,7 @@ runUpdate :: World -> WorldUpdate -> (World, Maybe WorldUpdate)
 runUpdate world update@(PlayerMove move) = result
     where
         result = if validNewPosition then (newWorld, Just update) else (world, Nothing)
-        validNewPosition = not $ world `hasAnyWallAt` newPosition
+        validNewPosition = world `isWalkableAt` newPosition
         newPosition = playerPosition player |+| delta move
         player = worldPlayer world
         newWorld = world{worldPlayer=player{playerPosition=newPosition}}
@@ -61,6 +67,13 @@ instance WorldObject WorldExit where
 instance WorldObject WorldPlayer where
     worldPosition = playerPosition
 
+isWalkableAt :: World -> WorldPosition -> Bool
+world `isWalkableAt` position = exitPosition (worldExit world) == position || world `hasAnyFloorAt` position
+
+hasAnyFloorAt :: World -> WorldPosition -> Bool
+world `hasAnyFloorAt` position = any ((position ==) . floorPosition) floors
+    where floors = worldFloors world
+    
 hasAnyWallAt :: World -> WorldPosition -> Bool
 world `hasAnyWallAt` position = any ((position ==) . wallPosition) walls
     where walls = worldWalls world
@@ -81,3 +94,6 @@ delta MoveUpLeft = delta MoveUp |+| delta MoveLeft
 delta MoveUpRight = delta MoveUp |+| delta MoveRight
 delta MoveDownLeft = delta MoveDown |+| delta MoveLeft
 delta MoveDownRight = delta MoveDown |+| delta MoveRight
+
+won :: World -> Bool
+won w = playerPosition (worldPlayer w) == exitPosition (worldExit w)

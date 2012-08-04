@@ -14,8 +14,10 @@ executable DuDuHoX
   other-modules:   
                    DuDuHoX.World,
                    Main,
-                   DuDuHoX.Console,
                    DuDuHoX.Game,
                    DuDuHoX.World.Builder,
-                   DuDuHoX.Util.Bresenham
+                   DuDuHoX.Util.Bresenham,
+                   DuDuHoX.Console.World,
+                   DuDuHoX.Console.Core,
+                   DuDuHoX.Console.Game
 

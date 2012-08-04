@@ -2,22 +2,24 @@
 
 Making a maze game in order to learn Haskell.
 
+** Game
+- Player is represented by '@'.
+- Player can move around pressing W, A, S and D keys.
+  - Can move only on top of walkable floor (represented by '.').
+- Player can quit the game pressing Q key.
+- To win the game, move on top of exit (represented by '!').
+
 ** Progress
 
 *** Working:
-- Movement (W, A, S, D)
-- Quitting (Q)
-- Winning (Moving on top of '!')
-- World parsing (DuDuHoX.World.Builder.parseWorld)
-- Line of sight (DuDuHoX.Console.drawVision)
-
-*** Work in progress:
-- Fog of war. 
-  - Draw objects in sight and objects already seen in a different way.
-  - Take a look at System.Console.ANSI SGR.
+- Movement.
+- Quitting.
+- Winning.
+- World parsing.
+- Line of sight.
+- Fog of war.
+- Draw walkable floor.
 
 *** Things to do:
-- Draw walkable floor.
-  - More efficient data representation of World?
 - World scrolling.
 - Keys & doors.

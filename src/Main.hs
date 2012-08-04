@@ -2,7 +2,7 @@ module Main where
 
 import Data.Maybe
 
-import DuDuHoX.Console
+import DuDuHoX.Console.Game
 import DuDuHoX.World
 import DuDuHoX.World.Builder
 
@@ -16,16 +16,16 @@ easyWorld = [
 maze :: [String]
 maze = [
     "#########",
-    "#@#     #",
-    "# # ### #",
-    "#    #  #",
-    "#### ## #",
-    "#    #  #",
-    "# #### ##",
-    "# #  # #",
-    "#   ## #",
-    "#####  #",
-    "#!    ##",
+    "#@#.....#",
+    "#.#.###.#",
+    "#....#..#",
+    "#  #.##.#",
+    "#....#..#",
+    "#.####.##",
+    "#.#.. .#",
+    "#...##.#",
+    "## ##..#",
+    "#!....##",
     "########"
     ]
 
@@ -35,8 +35,4 @@ world = fromJust . parseWorld $
     maze
 
 main :: IO ()
-main = do
-    consoleInit
-    gameLoop world
-    consoleFree
-    
+main = game world
