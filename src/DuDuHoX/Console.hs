@@ -25,7 +25,6 @@ consoleFree = do
 gameLoop :: World -> IO ()
 gameLoop world = do
     clearScreen
-    -- drawWorld world
     draw player
     drawVision player world
     interactWithUser world
@@ -56,33 +55,10 @@ consolePause = getChar >> void getChar -- Maldito Windows (buffering do console)
 
 handleUserInput :: World -> GameInput -> IO ()
 handleUserInput _ Quit = return ()
-handleUserInput world (Movement m) = do
-    maybe (return ()) (drawUpdate world world') worldUpdate
-    interactWithUser world'
+handleUserInput world (Movement m) =
+    gameLoop world'
     where
-        (world', worldUpdate) = runUpdate world (PlayerMove m)
-
-drawWorld :: World -> IO ()
-drawWorld world = do
-    mapM_ draw walls
-    draw player
-    draw exit
-    where
-        walls = worldWalls world
-        player = worldPlayer world
-        exit = worldExit world
-
-drawUpdate :: World -> World -> WorldUpdate -> IO ()
-drawUpdate oldWorld newWorld (PlayerMove _) =
-    when (oldPosition /= newPosition) $ do
-        clearPosition oldPosition
-        draw newPlayer
-        drawVision newPlayer newWorld
-    where
-         newPosition = playerPosition newPlayer 
-         newPlayer = worldPlayer newWorld
-         oldPosition = playerPosition oldPlayer
-         oldPlayer = worldPlayer oldWorld
+        (world', _) = runUpdate world (PlayerMove m)
 
 clearPosition :: WorldPosition -> IO ()
 clearPosition = putCharAt ' '
@@ -97,8 +73,8 @@ drawVision viewer world = do
     where
         walls = worldWalls world
         exit = worldExit world
-        inSight worldObject = not $ hasAnyWallBetween world viewerPosition (worldPosition worldObject) 
         viewerPosition = worldPosition viewer
+        inSight object = not $ hasAnyWallBetween world viewerPosition (worldPosition object)
 
 putCharAt :: Char -> WorldPosition -> IO ()
 putCharAt char position = setCursorPosition (y position) (x position) >> putChar char

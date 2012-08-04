@@ -9,13 +9,13 @@ executable DuDuHoX
   main-is:         Main.hs
   build-depends:   
                    base >= 4,
-                   ansi-terminal,
-                   random
+                   ansi-terminal
   ghc-options:     -Wall
   other-modules:   
                    DuDuHoX.World,
                    Main,
                    DuDuHoX.Console,
                    DuDuHoX.Game,
-                   DuDuHoX.World.Builder
+                   DuDuHoX.World.Builder,
+                   DuDuHoX.Util.Bresenham
 

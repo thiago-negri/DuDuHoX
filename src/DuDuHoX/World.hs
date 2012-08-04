@@ -1,6 +1,7 @@
 module DuDuHoX.World where
 
 import DuDuHoX.Game
+import DuDuHoX.Util.Bresenham
 
 data WorldPosition =
     WorldPosition {
@@ -60,9 +61,6 @@ instance WorldObject WorldExit where
 instance WorldObject WorldPlayer where
     worldPosition = playerPosition
 
-distance :: WorldPosition -> WorldPosition -> Int
-distance a b = abs (x a - x b) + abs (y a - y b)
-
 hasAnyWallAt :: World -> WorldPosition -> Bool
 world `hasAnyWallAt` position = any ((position ==) . wallPosition) walls
     where walls = worldWalls world
@@ -72,27 +70,7 @@ hasAnyWallBetween world a b = any (hasAnyWallAt world) path
     where path = straightPath a b
 
 straightPath :: WorldPosition -> WorldPosition -> [WorldPosition]
-straightPath a b | a == b    = []
-                 | otherwise = f a b repetition
-    where
-        f a b (r:rs) | a == b    = []
-                     | otherwise = let a' = (a |+| delta r) in a : f a' b rs
-        (x, y) = diff a b
-        x' = (abs x) + 1
-        y' = (abs y) + 1
-        repetition | x' > y'   = horizontalRepetition
-                   | x' < y'   = verticalRepetition
-                   | otherwise = diagonalRepetition
-        horizontalRepetition = concat . repeat $ (take (x' `div` y') $ repeat horizontalMove) ++ [verticalMove]
-        horizontalMove = if x < 0 then MoveLeft else MoveRight
-        verticalRepetition = concat . repeat $ (take (y' `div` x') $ repeat verticalMove) ++ [horizontalMove]
-        verticalMove = if y < 0 then MoveUp else MoveDown
-        diagonalRepetition = repeat diagonalMove
-        diagonalMove = if y < 0 then if x < 0 then MoveUpLeft else MoveUpRight
-                                else if x < 0 then MoveDownLeft else MoveDownRight
-
-moveDelta :: WorldPosition -> WorldPosition -> WorldPosition
-moveDelta a b = delta . direction $ diff a b
+straightPath a b = map (uncurry WorldPosition) $ digitalLine (x a, y a) (x b, y b)
 
 delta :: MoveDirection -> WorldPosition
 delta MoveUp = WorldPosition 0 (-1)
@@ -103,20 +81,3 @@ delta MoveUpLeft = delta MoveUp |+| delta MoveLeft
 delta MoveUpRight = delta MoveUp |+| delta MoveRight
 delta MoveDownLeft = delta MoveDown |+| delta MoveLeft
 delta MoveDownRight = delta MoveDown |+| delta MoveRight
-
-diff :: WorldPosition -> WorldPosition -> (Int, Int)
-diff a b = (x b - x a, y b - y a)
-
-direction :: (Int, Int) -> MoveDirection
-direction (x, y) | x' > y'   = horizontal
-                 | x' == y'  = diagonal
-                 | otherwise = vertical
-    where
-        x' = abs x
-        y' = abs y
-        horizontal = if x < 0 then MoveLeft else MoveRight
-        diagonal = if x < 0 then if y < 0 then MoveUpLeft
-                                          else MoveDownLeft
-                            else if y < 0 then MoveUpRight
-                                          else MoveDownRight
-        vertical = if y < 0 then MoveUp else MoveDown
