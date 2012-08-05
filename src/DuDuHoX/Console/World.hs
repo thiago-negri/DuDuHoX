@@ -74,12 +74,11 @@ mkPosition p =
 
 drawWorld :: ConsoleWorld -> IO ()
 drawWorld w = do
-    inSight
-    mapM_ draw $ seen w
-    
     inFog
     mapM_ draw $ fog w
     
+    inSight
+    mapM_ draw $ seen w
     draw $ viewer w
 
 updateVision :: ConsoleWorld -> ConsoleWorld
