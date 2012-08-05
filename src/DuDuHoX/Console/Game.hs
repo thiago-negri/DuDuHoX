@@ -18,7 +18,7 @@ gameLoop w = do
         then win
         else do drawWorld w
                 input <- getInput
-                handleUserInput input w
+                maybe (gameLoop w) (handleUserInput w) input
 
 win :: IO ()
 win = do
@@ -38,10 +38,9 @@ parseGameInput 'd' = Just $ Movement MoveRight
 parseGameInput 'q' = Just Quit
 parseGameInput _ = Nothing
 
-handleUserInput :: Maybe GameInput -> ConsoleWorld -> IO ()
-handleUserInput Nothing cw = gameLoop cw
-handleUserInput (Just Quit) _ = return ()
-handleUserInput (Just (Movement m)) cw = gameLoop cw'
+handleUserInput :: ConsoleWorld -> GameInput -> IO ()
+handleUserInput _ Quit = return ()
+handleUserInput cw (Movement m) = gameLoop cw'
     where
         w' = runUpdate (world cw) (PlayerMove m)
         cw' = updateWorld cw w'
