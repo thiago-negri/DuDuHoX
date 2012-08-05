@@ -4,6 +4,7 @@ import DuDuHoX.World
 import DuDuHoX.Game
 import DuDuHoX.Console.World
 import DuDuHoX.Console.Core
+import Control.Monad (liftM)
 
 game :: World -> IO ()
 game w = do
@@ -26,9 +27,7 @@ win = do
     pause
 
 getInput :: IO (Maybe GameInput)
-getInput = do
-    char <- getChar
-    return $! parseGameInput char
+getInput = liftM parseGameInput getChar
 
 parseGameInput :: Char -> Maybe GameInput
 parseGameInput 'w' = Just $ Movement MoveUp
@@ -40,7 +39,7 @@ parseGameInput _ = Nothing
 
 handleUserInput :: ConsoleWorld -> GameInput -> IO ()
 handleUserInput _ Quit = return ()
-handleUserInput cw (Movement m) = gameLoop cw'
+handleUserInput consoleWorld (Movement direction) = gameLoop newConsoleWorld
     where
-        w' = runUpdate (world cw) (PlayerMove m)
-        cw' = updateWorld cw w'
+        newConsoleWorld = updateWorld consoleWorld newWorld
+        newWorld = runUpdate (world consoleWorld) (PlayerMove direction)
