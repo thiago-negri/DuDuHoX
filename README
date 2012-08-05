@@ -21,7 +21,12 @@ Making a maze game in order to learn Haskell.
 - Draw walkable floor.
 
 *** Things to do:
+- Graphical world editing.
+  - Save, load, play ...
 - Refactor walkable floor.
   - Add "walkable" property to world's objects instead of hard-coded walkable checks.
+- User interface
+  - Game display area
+  - Message area
 - World scrolling.
 - Keys & doors.
