@@ -41,7 +41,7 @@ parseGameInput _ = Nothing
 handleUserInput :: Maybe GameInput -> ConsoleWorld -> IO ()
 handleUserInput Nothing cw = gameLoop cw
 handleUserInput (Just Quit) _ = return ()
-handleUserInput (Just (Movement m)) cw =
-    let w' = runUpdate (world cw) (PlayerMove m)
-        cw' = updateWorld cw w' in
-        gameLoop cw'
+handleUserInput (Just (Movement m)) cw = gameLoop cw'
+    where
+        w' = runUpdate (world cw) (PlayerMove m)
+        cw' = updateWorld cw w'
