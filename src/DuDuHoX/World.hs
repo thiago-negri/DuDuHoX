@@ -46,10 +46,10 @@ data WorldUpdate =
 (|+|) :: WorldPosition -> WorldPosition -> WorldPosition
 a |+| b = WorldPosition (x a + x b) (y a + y b)
 
-runUpdate :: World -> WorldUpdate -> (World, Maybe WorldUpdate)
-runUpdate world update@(PlayerMove move) = result
+runUpdate :: World -> WorldUpdate -> World
+runUpdate world (PlayerMove move) = result
     where
-        result = if validNewPosition then (newWorld, Just update) else (world, Nothing)
+        result = if validNewPosition then newWorld else world
         validNewPosition = world `isWalkableAt` newPosition
         newPosition = playerPosition player |+| delta move
         player = worldPlayer world
