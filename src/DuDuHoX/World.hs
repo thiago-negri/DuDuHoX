@@ -1,7 +1,6 @@
 module DuDuHoX.World where
 
 import DuDuHoX.Game
-import DuDuHoX.Util.Bresenham
 
 data WorldPosition =
     WorldPosition {
@@ -74,17 +73,6 @@ hasAnyFloorAt :: World -> WorldPosition -> Bool
 world `hasAnyFloorAt` position = any ((position ==) . floorPosition) floors
     where floors = worldFloors world
     
-hasAnyWallAt :: World -> WorldPosition -> Bool
-world `hasAnyWallAt` position = any ((position ==) . wallPosition) walls
-    where walls = worldWalls world
-
-hasAnyWallBetween :: World -> WorldPosition -> WorldPosition -> Bool
-hasAnyWallBetween world a b = any (hasAnyWallAt world) path
-    where path = straightPath a b
-
-straightPath :: WorldPosition -> WorldPosition -> [WorldPosition]
-straightPath a b = map (uncurry WorldPosition) $ digitalLine (x a, y a) (x b, y b)
-
 delta :: MoveDirection -> WorldPosition
 delta MoveUp = WorldPosition 0 (-1)
 delta MoveDown = WorldPosition 0 1
