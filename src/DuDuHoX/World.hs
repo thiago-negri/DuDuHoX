@@ -90,10 +90,6 @@ delta MoveUp = WorldPosition 0 (-1)
 delta MoveDown = WorldPosition 0 1
 delta MoveLeft = WorldPosition (-1) 0
 delta MoveRight = WorldPosition 1 0
-delta MoveUpLeft = delta MoveUp |+| delta MoveLeft
-delta MoveUpRight = delta MoveUp |+| delta MoveRight
-delta MoveDownLeft = delta MoveDown |+| delta MoveLeft
-delta MoveDownRight = delta MoveDown |+| delta MoveRight
 
 won :: World -> Bool
 won w = playerPosition (worldPlayer w) == exitPosition (worldExit w)

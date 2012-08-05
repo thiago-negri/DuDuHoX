@@ -4,11 +4,7 @@ data MoveDirection =
     MoveUp | 
     MoveDown | 
     MoveLeft | 
-    MoveRight |
-    MoveUpLeft |
-    MoveUpRight |
-    MoveDownLeft |
-    MoveDownRight
+    MoveRight
 
 data GameInput = 
     Movement MoveDirection | 

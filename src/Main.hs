@@ -9,7 +9,7 @@ import DuDuHoX.World.Builder
 easyWorld :: [String]
 easyWorld = [
     "############",
-    "# @      ! #",
+    "#.@......!.#",
     "############"
     ]
     
