@@ -34,7 +34,7 @@ getStrategy (x0, y0) (x1, y1) = (balance, step)
         (dx, dy) = (x1 - x0, y1 - y0)
         horizontalStep signal (x, y) = (x + signum dx,                y + block signal (signum dy))
         verticalStep   signal (x, y) = (x + block signal (signum dx), y + signum dy)
-        block signal a = if signal then a else 0 
+        block signal a = if signal then a else 0
 
 digitalLine :: Point -> Point -> Line
 digitalLine a b = takeWhile (/= b) $ walk balance a

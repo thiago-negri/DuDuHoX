@@ -1,15 +1,15 @@
 module DuDuHoX.Console.World where
 
-import DuDuHoX.World
-import DuDuHoX.Console.Core
-import DuDuHoX.Util.Bresenham
-import Data.List ((\\))
+import           Data.List              ((\\))
+import           DuDuHoX.Console.Core
+import           DuDuHoX.Util.Bresenham
+import           DuDuHoX.World
 
 data ConsoleWorld =
     ConsoleWorld {
         viewer :: ConsoleObject,
         seen :: [ConsoleObject],
-        fog :: [ConsoleObject], 
+        fog :: [ConsoleObject],
         unseen :: [ConsoleObject],
         world :: World
     }
@@ -34,7 +34,7 @@ updateWorld cw w = updateVision $ cw { viewer = player, world = w }
     where player = mkPlayer $ worldPlayer w
 
 mkPlayer :: WorldPlayer -> ConsoleObject
-mkPlayer p = 
+mkPlayer p =
     ConsoleObject {
         graphic = '@',
         translucid = True,
@@ -76,7 +76,7 @@ drawWorld :: ConsoleWorld -> IO ()
 drawWorld w = do
     inFog
     mapM_ draw $ fog w
-    
+
     inSight
     mapM_ draw $ seen w
     draw $ viewer w

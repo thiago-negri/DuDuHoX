@@ -1,21 +1,21 @@
 module DuDuHoX.Console.Game where
 
-import DuDuHoX.World
-import DuDuHoX.Game
-import DuDuHoX.Console.World
-import DuDuHoX.Console.Core
-import Control.Monad (liftM)
+import           Control.Monad         (liftM)
+import           DuDuHoX.Console.Core
+import           DuDuHoX.Console.World
+import           DuDuHoX.Game
+import           DuDuHoX.World
 
 game :: World -> IO ()
 game w = do
     initConsole
     gameLoop $ mkWorld w
     freeConsole
-    
+
 gameLoop :: ConsoleWorld -> IO ()
 gameLoop w = do
     clearConsole
-    if won (world w) 
+    if won (world w)
         then win
         else do drawWorld w
                 input <- getInput

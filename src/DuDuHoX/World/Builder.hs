@@ -1,11 +1,11 @@
 module DuDuHoX.World.Builder (
     parseWorld
-    ) 
+    )
 where
 
-import Control.Monad (mplus)
-import Data.Function (on)
-import DuDuHoX.World
+import           Control.Monad (mplus)
+import           Data.Function (on)
+import           DuDuHoX.World
 
 data WorldBuilder =
     WorldBuilder {
@@ -16,11 +16,11 @@ data WorldBuilder =
     }
 
 parseWorld :: [String] -> Maybe World
-parseWorld worldLines = do 
+parseWorld worldLines = do
     player <- mPlayer
     exit <- mExit
     return World{worldPlayer = player, worldWalls = walls, worldFloors = floors, worldExit = exit}
-    where 
+    where
         builder = parseWorldInfo worldLines
         mPlayer = builderPlayer builder
         mExit = builderExit builder
@@ -28,12 +28,12 @@ parseWorld worldLines = do
         floors = builderFloors builder
 
 joinBuilders :: WorldBuilder -> WorldBuilder -> WorldBuilder
-joinBuilders a b = 
-    WorldBuilder { 
-        builderPlayer = newPlayer, 
-        builderWalls = newWalls, 
-        builderFloors = newFloors, 
-        builderExit = newExit 
+joinBuilders a b =
+    WorldBuilder {
+        builderPlayer = newPlayer,
+        builderWalls = newWalls,
+        builderFloors = newFloors,
+        builderExit = newExit
     }
     where
         newPlayer = joinOn builderPlayer
@@ -60,7 +60,7 @@ buildExit position = emptyBuilder { builderExit = Just $ WorldExit position }
 parseWorldInfo :: [String] -> WorldBuilder
 parseWorldInfo worldLines = foldl f emptyBuilder indexatedWorldLines
     where
-        f a = joinBuilders a . parseWorldLineInfo  
+        f a = joinBuilders a . parseWorldLineInfo
         indexatedWorldLines = indexated worldLines
 
 parseWorldLineInfo :: (Int, String) -> WorldBuilder

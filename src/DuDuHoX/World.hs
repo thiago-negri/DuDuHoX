@@ -1,6 +1,6 @@
 module DuDuHoX.World where
 
-import DuDuHoX.Game
+import           DuDuHoX.Game
 
 data WorldPosition =
     WorldPosition {
@@ -72,7 +72,7 @@ world `isWalkableAt` position = exitPosition (worldExit world) == position || wo
 hasAnyFloorAt :: World -> WorldPosition -> Bool
 world `hasAnyFloorAt` position = any ((position ==) . floorPosition) floors
     where floors = worldFloors world
-    
+
 delta :: MoveDirection -> WorldPosition
 delta MoveUp = WorldPosition 0 (-1)
 delta MoveDown = WorldPosition 0 1

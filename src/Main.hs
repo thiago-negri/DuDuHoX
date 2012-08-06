@@ -1,10 +1,10 @@
 module Main where
 
-import Data.Maybe
+import           Data.Maybe
 
-import DuDuHoX.Console.Game
-import DuDuHoX.World
-import DuDuHoX.World.Builder
+import           DuDuHoX.Console.Game
+import           DuDuHoX.World
+import           DuDuHoX.World.Builder
 
 easyWorld :: [String]
 easyWorld = [
@@ -12,7 +12,7 @@ easyWorld = [
     "#.@......!.#",
     "############"
     ]
-    
+
 maze :: [String]
 maze = [
     "#########",

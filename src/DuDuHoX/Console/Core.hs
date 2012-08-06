@@ -1,8 +1,8 @@
 module DuDuHoX.Console.Core where
 
-import System.Console.ANSI
-import System.IO
-import Control.Monad (void)
+import           Control.Monad       (void)
+import           System.Console.ANSI
+import           System.IO
 
 data ConsoleObject =
     ConsoleObject {
@@ -27,7 +27,7 @@ initConsole = do
     hideCursor
     clearScreen
     setTitle "DuDuHoX"
-    
+
 freeConsole :: IO ()
 freeConsole = do
     clearScreen
