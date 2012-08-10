@@ -29,10 +29,10 @@ maze = [
     "########"
     ]
 
-world :: World
-world = fromJust . parseWorld $
+w :: World
+w = fromJust . parseWorld $
     --easyWorld
     maze
 
 main :: IO ()
-main = game world
+main = game w

@@ -3,6 +3,7 @@
 Making a maze game in order to learn Haskell.
 
 ** Game
+
 - Player is represented by '@'.
 - Player can move around pressing W, A, S and D keys.
   - Can move only on top of walkable floor (represented by '.').
@@ -11,7 +12,7 @@ Making a maze game in order to learn Haskell.
 
 ** Progress
 
-*** Working:
+*** OK:
 - Movement.
 - Quitting.
 - Winning.
@@ -20,13 +21,15 @@ Making a maze game in order to learn Haskell.
 - Fog of war.
 - Draw walkable floor.
 
+*** Work in progress:
+- User interface
+  - Game display area
+  - Message area
+
 *** Things to do:
 - Graphical world editing.
   - Save, load, play ...
 - Refactor walkable floor.
   - Add "walkable" property to world's objects instead of hard-coded walkable checks.
-- User interface
-  - Game display area
-  - Message area
 - World scrolling.
 - Keys & doors.

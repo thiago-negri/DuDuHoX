@@ -2,6 +2,7 @@ module DuDuHoX.Console.Game where
 
 import           Control.Monad         (liftM)
 import           DuDuHoX.Console.Core
+import           DuDuHoX.Console.Interface
 import           DuDuHoX.Console.World
 import           DuDuHoX.Game
 import           DuDuHoX.World
@@ -17,7 +18,7 @@ gameLoop w = do
     clearConsole
     if won (world w)
         then win
-        else do drawWorld w
+        else do drawConsoleInterface (ConsoleInterface w)
                 input <- getInput
                 maybe (gameLoop w) (handleUserInput w) input
 

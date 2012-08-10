@@ -19,5 +19,6 @@ executable DuDuHoX
                    DuDuHoX.Util.Bresenham,
                    DuDuHoX.Console.World,
                    DuDuHoX.Console.Core,
-                   DuDuHoX.Console.Game
+                   DuDuHoX.Console.Game,
+                   DuDuHoX.Console.Interface
 
