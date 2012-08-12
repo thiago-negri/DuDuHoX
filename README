@@ -26,6 +26,4 @@ Making a maze game in order to learn Haskell.
 *** Things to do:
 - Graphical world editing.
   - Save, load, play ...
-- Refactor walkable floor.
-  - Add "walkable" property to world's objects instead of hard-coded walkable checks.
 - Keys & doors.
