@@ -79,8 +79,7 @@ drawBox p w h = do
     drawVerticalLine (cpPlus p (ConsolePosition (w + 1) 1)) h
 
 drawHorizontalLine :: ConsolePosition -> Int -> IO ()
-drawHorizontalLine _ 0 = return () 
-drawHorizontalLine p w = '-' `putCharAt` p >> drawHorizontalLine (cpPlus p (ConsolePosition 1 0)) (w - 1)
+drawHorizontalLine p w = drawText p $ replicate w '-'
  
 drawVerticalLine :: ConsolePosition -> Int -> IO ()
 drawVerticalLine _ 0 = return () 
