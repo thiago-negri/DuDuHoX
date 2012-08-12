@@ -3,8 +3,7 @@ module DuDuHoX.World.Builder (
     )
 where
 
-import           Control.Monad (mplus)
-import           Data.Function (on)
+import           Control.Monad.Trans.State.Lazy
 import           DuDuHoX.World
 
 data WorldBuilder =
@@ -21,61 +20,68 @@ parseWorld worldLines = do
     exit <- mExit
     return World{worldPlayer = player, worldWalls = walls, worldFloors = floors, worldExit = exit}
     where
-        builder = parseWorldInfo worldLines
+        builder = execState (parseWorldInfo worldLines) emptyBuilder
         mPlayer = builderPlayer builder
         mExit = builderExit builder
         walls = builderWalls builder
         floors = builderFloors builder
 
-joinBuilders :: WorldBuilder -> WorldBuilder -> WorldBuilder
-joinBuilders a b =
-    WorldBuilder {
-        builderPlayer = newPlayer,
-        builderWalls = newWalls,
-        builderFloors = newFloors,
-        builderExit = newExit
-    }
-    where
-        newPlayer = joinOn builderPlayer
-        newExit = joinOn builderExit
-        newWalls = joinOn builderWalls
-        newFloors = joinOn builderFloors
-        joinOn f = (mplus `on` f) a b
-
 emptyBuilder :: WorldBuilder
-emptyBuilder = WorldBuilder { builderPlayer = Nothing, builderWalls = [], builderFloors = [], builderExit = Nothing }
+emptyBuilder =
+    WorldBuilder {
+        builderPlayer = Nothing,
+        builderWalls = [],
+        builderFloors = [],
+        builderExit = Nothing
+    }
 
-buildWall :: WorldPosition -> WorldBuilder
-buildWall position = emptyBuilder { builderWalls = [WorldWall position] }
+addWall :: WorldPosition -> State WorldBuilder ()
+addWall p = modify $ \builder ->
+    builder {
+        builderWalls = WorldWall p : builderWalls builder
+    }
 
-buildPlayer :: WorldPosition -> WorldBuilder
-buildPlayer position = emptyBuilder { builderPlayer = Just $ WorldPlayer position }
+addPlayer :: WorldPosition -> State WorldBuilder ()
+addPlayer position = modify $ \builder ->
+    builder {
+        builderPlayer = Just $ WorldPlayer position
+    }
 
-buildFloor :: WorldPosition -> WorldBuilder
-buildFloor position = emptyBuilder { builderFloors = [WorldFloor position] }
+addFloor :: WorldPosition -> State WorldBuilder ()
+addFloor position = modify $ \builder ->
+    builder {
+        builderFloors = WorldFloor position : builderFloors builder
+    }
 
-buildExit :: WorldPosition -> WorldBuilder
-buildExit position = emptyBuilder { builderExit = Just $ WorldExit position }
+addExit :: WorldPosition -> State WorldBuilder ()
+addExit position = modify $ \builder ->
+    builder {
+        builderExit = Just $ WorldExit position
+    }
 
-parseWorldInfo :: [String] -> WorldBuilder
-parseWorldInfo worldLines = foldl f emptyBuilder indexatedWorldLines
+parseWorldInfo :: [String] -> State WorldBuilder ()
+parseWorldInfo worldLines = threadState indexatedWorldLines f
     where
-        f a = joinBuilders a . parseWorldLineInfo
+        f = parseWorldLineInfo
         indexatedWorldLines = indexated worldLines
 
-parseWorldLineInfo :: (Int, String) -> WorldBuilder
-parseWorldLineInfo (y, worldLine) = foldl f emptyBuilder indexatedWorldLine
+threadState :: [a] -> (a -> State s ()) -> State s ()
+threadState [] _ = return ()
+threadState (x:xs) f = f x >> threadState xs f
+
+parseWorldLineInfo :: (Int, String) -> State WorldBuilder ()
+parseWorldLineInfo (y, worldLine) = threadState indexatedWorldLine f
     where
-        f a = joinBuilders a . parseWorldCharInfo y
+        f = parseWorldCharInfo y
         indexatedWorldLine = indexated worldLine
 
-parseWorldCharInfo :: Int -> (Int, Char) -> WorldBuilder
+parseWorldCharInfo :: Int -> (Int, Char) -> State WorldBuilder ()
 parseWorldCharInfo y (x, c) = case c of
-    '#' -> buildWall position
-    '@' -> buildPlayer position `joinBuilders` buildFloor position
-    '.' -> buildFloor position
-    '!' -> buildExit position
-    _ -> emptyBuilder
+    '#' -> addWall position
+    '@' -> addPlayer position >> addFloor position
+    '.' -> addFloor position
+    '!' -> addExit position
+    _ -> return ()
     where position = WorldPosition x y
 
 indexated :: [a] -> [(Int, a)]
