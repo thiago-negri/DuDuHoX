@@ -1,7 +1,4 @@
-module DuDuHoX.World.Builder (
-    parseWorld
-    )
-where
+module DuDuHoX.World.Builder (parseWorld) where
 
 import           Control.Monad.Trans.State.Lazy
 import           DuDuHoX.World
@@ -16,15 +13,15 @@ data WorldBuilder =
 
 parseWorld :: [String] -> Maybe World
 parseWorld worldLines = do
-    player <- mPlayer
-    exit <- mExit
-    return World{worldPlayer = player, worldWalls = walls, worldFloors = floors, worldExit = exit}
-    where
-        builder = execState (parseWorldInfo worldLines) emptyBuilder
-        mPlayer = builderPlayer builder
-        mExit = builderExit builder
-        walls = builderWalls builder
-        floors = builderFloors builder
+    player <- builderPlayer builder
+    exit <- builderExit builder
+    return World {
+        worldPlayer = player,
+        worldWalls = builderWalls builder,
+        worldFloors = builderFloors builder,
+        worldExit = exit
+    }
+    where builder = execState (parseWorldInfo worldLines) emptyBuilder
 
 emptyBuilder :: WorldBuilder
 emptyBuilder =
@@ -70,12 +67,13 @@ parseWorldLineInfo :: (Int, String) -> State WorldBuilder ()
 parseWorldLineInfo (y, worldLine) = threadState (indexated worldLine) (parseWorldCharInfo y)
 
 parseWorldCharInfo :: Int -> (Int, Char) -> State WorldBuilder ()
-parseWorldCharInfo y (x, c) = case c of
-    '#' -> addWall position
-    '@' -> addPlayer position >> addFloor position
-    '.' -> addFloor position
-    '!' -> addExit position
-    _ -> return ()
+parseWorldCharInfo y (x, c) =
+    case c of
+        '#' -> addWall position
+        '@' -> addPlayer position >> addFloor position
+        '.' -> addFloor position
+        '!' -> addExit position
+        _ -> return ()
     where position = WorldPosition x y
 
 indexated :: [a] -> [(Int, a)]
