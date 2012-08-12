@@ -40,4 +40,4 @@ digitalLine :: Point -> Point -> Line
 digitalLine a b = takeWhile (/= b) $ walk balance a
   where
       (balance, step) = getStrategy a b
-      walk (signal:signals) point = let point' = (step signal point) in point' : walk signals point'
+      walk signals point = let point' = (step (head signals) point) in point' : walk (tail signals) point'

@@ -4,8 +4,8 @@ import           DuDuHoX.Game
 
 data WorldPosition =
     WorldPosition {
-        x :: Int,
-        y :: Int
+        worldX :: Int,
+        worldY :: Int
     }
     deriving (Eq, Show)
 
@@ -43,7 +43,7 @@ data WorldUpdate =
     }
 
 (|+|) :: WorldPosition -> WorldPosition -> WorldPosition
-a |+| b = WorldPosition (x a + x b) (y a + y b)
+a |+| b = WorldPosition (worldX a + worldX b) (worldY a + worldY b)
 
 runUpdate :: World -> WorldUpdate -> World
 runUpdate world (PlayerMove move) = result

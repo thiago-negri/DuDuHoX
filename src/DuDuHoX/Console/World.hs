@@ -68,8 +68,8 @@ mkFloor f =
 mkPosition :: WorldPosition -> ConsolePosition
 mkPosition p =
     ConsolePosition {
-        consoleX = x p,
-        consoleY = y p
+        consoleX = worldX p,
+        consoleY = worldY p
     }
 
 drawWorld :: ConsoleWorld -> IO ()
