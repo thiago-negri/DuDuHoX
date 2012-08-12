@@ -20,7 +20,7 @@ drawConsoleInterface = do
 
 drawWorldInterface :: ConsoleWorld -> IO ()
 drawWorldInterface w = do
-    clearBox (ConsolePosition 2 2) 39 10
+    clearBox (ConsolePosition 2 2) 40 10
     drawWorld (execState updateWorldToInterface w)
 
 updateWorldToInterface :: State ConsoleWorld ()

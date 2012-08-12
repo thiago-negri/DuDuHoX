@@ -34,6 +34,8 @@ initConsole = do
     setSGR [SetColor Background Vivid White,
             SetColor Foreground Dull Black]
     clearScreen
+    drawBox (ConsolePosition 0 0) 52 17
+    clearBox (ConsolePosition 1 1) 52 16
     setTitle "DuDuHoX"
 
 freeConsole :: IO ()
