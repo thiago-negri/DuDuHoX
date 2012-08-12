@@ -31,6 +31,8 @@ initConsole = do
     hSetBuffering stdin NoBuffering
     hSetBuffering stdout NoBuffering
     hideCursor
+    setSGR [SetColor Background Vivid White,
+            SetColor Foreground Dull Black]
     clearScreen
     setTitle "DuDuHoX"
 
@@ -50,10 +52,10 @@ putCharAt :: Char -> ConsolePosition -> IO ()
 putCharAt c p = setCursorPosition (consoleY p) (consoleX p) >> putChar c
 
 inSight :: IO ()
-inSight = setSGR [SetColor Foreground Vivid White]
+inSight = setSGR [SetColor Foreground Dull Black]
 
 inFog :: IO ()
-inFog = setSGR [SetColor Foreground Dull White]
+inFog = setSGR [SetColor Foreground Vivid Black]
 
 pause :: IO ()
 pause = getChar >> void getChar -- pega duas vezes para garantir que o buffering do Windows não sacaneie o "pause"
