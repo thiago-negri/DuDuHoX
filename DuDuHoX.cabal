@@ -9,7 +9,8 @@ executable DuDuHoX
   main-is:         Main.hs
   build-depends:   
                    base >= 4,
-                   ansi-terminal
+                   ansi-terminal,
+                   transformers
   ghc-options:     -Wall
   other-modules:   
                    DuDuHoX.World,

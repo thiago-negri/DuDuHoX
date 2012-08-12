@@ -55,11 +55,13 @@ inSight = setSGR [SetColor Foreground Vivid White]
 inFog :: IO ()
 inFog = setSGR [SetColor Foreground Dull White]
 
-message :: String -> IO ()
-message = putStrLn
-
 pause :: IO ()
 pause = getChar >> void getChar -- pega duas vezes para garantir que o buffering do Windows não sacaneie o "pause"
+
+clearBox :: ConsolePosition -> Int -> Int -> IO ()
+clearBox p w h
+    | h < 0 = return ()
+    | otherwise = drawText (cpPlus p (ConsolePosition 0 h)) (replicate w ' ') >> clearBox p w (h - 1)
 
 drawBox :: ConsolePosition -> Int -> Int -> IO ()
 drawBox p w h = do
@@ -81,5 +83,4 @@ drawVerticalLine _ 0 = return ()
 drawVerticalLine p h = '|' `putCharAt` p >> drawVerticalLine (cpPlus p (ConsolePosition 0 1)) (h - 1)
 
 drawText :: ConsolePosition -> String -> IO ()
-drawText _ [] = return ()
-drawText p (c:cs) = c `putCharAt` p >> drawText (cpPlus p (ConsolePosition 1 0)) cs 
+drawText p t = setCursorPosition (consoleY p) (consoleX p) >> putStr t 

@@ -20,16 +20,12 @@ Making a maze game in order to learn Haskell.
 - Line of sight.
 - Fog of war.
 - Draw walkable floor.
-
-*** Work in progress:
-- User interface
-  - Game display area
-  - Message area
+- User interface (world display area, controls, message area).
+- World scrolling.
 
 *** Things to do:
 - Graphical world editing.
   - Save, load, play ...
 - Refactor walkable floor.
   - Add "walkable" property to world's objects instead of hard-coded walkable checks.
-- World scrolling.
 - Keys & doors.

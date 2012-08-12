@@ -10,17 +10,17 @@ import           DuDuHoX.World
 game :: World -> IO ()
 game w = do
     initConsole
+    drawConsoleInterface
     gameLoop $ mkWorld w
     freeConsole
 
 gameLoop :: ConsoleWorld -> IO ()
 gameLoop w = do
-    clearConsole
-    if won (world w)
-        then win
-        else do drawConsoleInterface (ConsoleInterface w)
-                input <- getInput
-                maybe (gameLoop w) (handleUserInput w) input
+    drawWorldInterface w
+    if won (world w) then win else gameLoop' w
+
+gameLoop' :: ConsoleWorld -> IO ()
+gameLoop' w = getInput >>= maybe (gameLoop' w) (handleUserInput w)
 
 win :: IO ()
 win = do
