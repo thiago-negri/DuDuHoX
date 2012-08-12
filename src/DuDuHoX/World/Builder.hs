@@ -60,20 +60,14 @@ addExit position = modify $ \builder ->
     }
 
 parseWorldInfo :: [String] -> State WorldBuilder ()
-parseWorldInfo worldLines = threadState indexatedWorldLines f
-    where
-        f = parseWorldLineInfo
-        indexatedWorldLines = indexated worldLines
+parseWorldInfo worldLines = threadState (indexated worldLines) parseWorldLineInfo
 
 threadState :: [a] -> (a -> State s ()) -> State s ()
 threadState [] _ = return ()
 threadState (x:xs) f = f x >> threadState xs f
 
 parseWorldLineInfo :: (Int, String) -> State WorldBuilder ()
-parseWorldLineInfo (y, worldLine) = threadState indexatedWorldLine f
-    where
-        f = parseWorldCharInfo y
-        indexatedWorldLine = indexated worldLine
+parseWorldLineInfo (y, worldLine) = threadState (indexated worldLine) (parseWorldCharInfo y)
 
 parseWorldCharInfo :: Int -> (Int, Char) -> State WorldBuilder ()
 parseWorldCharInfo y (x, c) = case c of
