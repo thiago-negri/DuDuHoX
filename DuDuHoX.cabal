@@ -10,7 +10,8 @@ executable DuDuHoX
   build-depends:   
                    base >= 4,
                    ansi-terminal,
-                   transformers
+                   transformers,
+                   bytestring
   ghc-options:     -Wall
   other-modules:   
                    DuDuHoX.World,

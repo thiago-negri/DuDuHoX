@@ -1,40 +1,14 @@
 module Main where
 
-import           Data.Maybe
-
+import qualified Data.ByteString       as BS
+import qualified Data.ByteString.Char8 as BS8
 import           DuDuHoX.Console.Game
-import           DuDuHoX.World
 import           DuDuHoX.World.Builder
-
-easyWorld :: [String]
-easyWorld = [
-    "############",
-    "#.@......!.#",
-    "############"
-    ]
-
-maze :: [String]
-maze = [
-    "                  ##########",
-    "#########         #........#",
-    "#@#.....#       ###.####.#.#",
-    "#.#.###...............#..#.#",
-    "#....#..#       #.....#.##.#",
-    "#  #.##.# #######..... .#..#",
-    "#....#..# #........######.##",
-    "#.####.## #.#.#.#.##....#.#",
-    "#.#.. .# #..#.#.#....####.#",
-    "#...##.# #.#..#..#####..! #",
-    "## ##..# #.#.#..##.....####",
-    "#.....## ###.#.##..#####",
-    "######## #...#....##",
-    "         ##########"
-    ]
-
-w :: World
-w = fromJust . parseWorld $
-    --easyWorld
-    maze
+import           System.IO
 
 main :: IO ()
-main = game w
+main = do
+    putStr "Map name (maze.ddh | easyWorld.ddh): "
+    hFlush stdout
+    file <- getLine >>= BS.readFile
+    maybe (putStrLn "Invalid map") game $ parseWorld . lines $ BS8.unpack file
