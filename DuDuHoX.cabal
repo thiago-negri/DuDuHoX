@@ -22,5 +22,7 @@ executable DuDuHoX
                    DuDuHoX.Console.World,
                    DuDuHoX.Console.Core,
                    DuDuHoX.Console.Game,
-                   DuDuHoX.Console.Interface
+                   DuDuHoX.Console.Interface,
+                   DuDuHoX.World.Base,
+                   DuDuHoX.Console
 

@@ -2,9 +2,9 @@ module Main where
 
 import qualified Data.ByteString       as BS
 import qualified Data.ByteString.Char8 as BS8
-import           DuDuHoX.Console.Game
-import           DuDuHoX.World.Builder
-import           System.IO
+import           DuDuHoX.Console (game)
+import           DuDuHoX.World (parseWorld)
+import           System.IO (hFlush, stdout)
 
 main :: IO ()
 main = do
