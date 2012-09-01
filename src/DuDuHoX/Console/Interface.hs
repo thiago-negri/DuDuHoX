@@ -2,25 +2,27 @@ module DuDuHoX.Console.Interface where
 
 import           Control.Monad.Trans.State.Lazy
 import           DuDuHoX.Console.Core
+import           DuDuHoX.Console.Monad
+import           DuDuHoX.Console.Types
 import           DuDuHoX.Console.World
 
-drawConsoleInterface :: IO ()
-drawConsoleInterface = do
+drawConsoleInterface :: DConsole
+drawConsoleInterface =
     -- World area
-    drawBox (ConsolePosition 1 1) 40 11
+    DrawBox (ConsolePosition 1 1) 40 11.
 
     -- Message area
-    drawBox (ConsolePosition 1 15) 40 1
+    DrawBox (ConsolePosition 1 15) 40 1.
 
     -- Controls
-    drawText (ConsolePosition 46 9) "(W)"
-    drawText (ConsolePosition 44 10) "(A)+(D)"
-    drawText (ConsolePosition 46 11) "(S)"
-    drawText (ConsolePosition 46 16) "(Q)uit"
+    DrawText (ConsolePosition 46 9) "(W)".
+    DrawText (ConsolePosition 44 10) "(A)+(D)".
+    DrawText (ConsolePosition 46 11) "(S)".
+    DrawText (ConsolePosition 46 16) "(Q)uit"
 
-drawWorldInterface :: ConsoleWorld -> IO ()
-drawWorldInterface w = do
-    clearBox (ConsolePosition 2 2) 40 10
+drawWorldInterface :: ConsoleWorld -> DConsole
+drawWorldInterface w =
+    ClearBox (ConsolePosition 2 2) 40 10.
     drawWorld (execState updateWorldToInterface w)
 
 updateWorldToInterface :: State ConsoleWorld ()

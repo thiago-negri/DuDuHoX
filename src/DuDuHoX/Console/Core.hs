@@ -1,29 +1,9 @@
 module DuDuHoX.Console.Core where
 
-import           Control.Monad       (void)
+import           Control.Monad         (void)
+import           DuDuHoX.Console.Types
 import           System.Console.ANSI
 import           System.IO
-
-data ConsoleObject =
-    ConsoleObject {
-        graphic :: Char,
-        translucid :: Bool,
-        position :: ConsolePosition
-    }
-    deriving (Eq)
-
-data ConsolePosition =
-    ConsolePosition {
-        consoleX :: Int,
-        consoleY :: Int
-    }
-    deriving (Eq)
-
-cpPlus :: ConsolePosition -> ConsolePosition -> ConsolePosition
-cpPlus a b = ConsolePosition (consoleX a + consoleX b) (consoleY a + consoleY b)
-
-cpMinus :: ConsolePosition -> ConsolePosition -> ConsolePosition
-cpMinus a b = ConsolePosition (consoleX b - consoleX a) (consoleY b - consoleY a)
 
 initConsole :: IO ()
 initConsole = do
@@ -80,10 +60,10 @@ drawBox p w h = do
 
 drawHorizontalLine :: ConsolePosition -> Int -> IO ()
 drawHorizontalLine p w = drawText p $ replicate w '-'
- 
+
 drawVerticalLine :: ConsolePosition -> Int -> IO ()
-drawVerticalLine _ 0 = return () 
+drawVerticalLine _ 0 = return ()
 drawVerticalLine p h = '|' `putCharAt` p >> drawVerticalLine (cpPlus p (ConsolePosition 0 1)) (h - 1)
 
 drawText :: ConsolePosition -> String -> IO ()
-drawText p t = setCursorPosition (consoleY p) (consoleX p) >> putStr t 
+drawText p t = setCursorPosition (consoleY p) (consoleX p) >> putStr t

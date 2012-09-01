@@ -1,8 +1,14 @@
 {-# LANGUAGE RecordWildCards #-}
-module DuDuHoX.Console.Monad where
+module DuDuHoX.Console.Monad
+    (DConsole
+    ,DuDuHoXConsole(..)
+    ,ConsoleVisibility(..)
+    ,runConsole
+    )
+where
 
-import           DuDuHoX.Console.Core (ConsoleObject, ConsolePosition, clearBox, clearConsole, draw,
- drawBox, drawText, inFog, inSight)
+import           DuDuHoX.Console.Core
+import           DuDuHoX.Console.Types
 
 data ConsoleVisibility = InSight | Fog
 
@@ -11,7 +17,7 @@ data DuDuHoXConsole =
   | DrawObjects { visibility :: ConsoleVisibility, objects :: [ConsoleObject], next :: DuDuHoXConsole }
   | ClearBox { corner :: ConsolePosition, height :: Int, width :: Int, next :: DuDuHoXConsole }
   | DrawBox { corner :: ConsolePosition, height :: Int, width :: Int, next :: DuDuHoXConsole }
-  | DrawText { position :: ConsolePosition, text :: String, next :: DuDuHoXConsole }
+  | DrawText { corner :: ConsolePosition, text :: String, next :: DuDuHoXConsole }
   | End
 
 type DConsole = DuDuHoXConsole -> DuDuHoXConsole
@@ -28,5 +34,5 @@ runConsole' x =
                                 Fog     -> inFog) >> mapM_ draw objects >> runConsole' next
         ClearBox{..}    -> clearBox corner height width >> runConsole' next
         DrawBox{..}     -> drawBox corner height width >> runConsole' next
-        DrawText{..}    -> drawText position text >> runConsole' next
+        DrawText{..}    -> drawText corner text >> runConsole' next
         End             -> return ()

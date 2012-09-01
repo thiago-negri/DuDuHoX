@@ -1,7 +1,8 @@
 module DuDuHoX.Console.World where
 
 import           Data.List              ((\\))
-import           DuDuHoX.Console.Core
+import           DuDuHoX.Console.Monad
+import           DuDuHoX.Console.Types
 import           DuDuHoX.Util.Bresenham
 import           DuDuHoX.World
 
@@ -72,14 +73,10 @@ mkPosition p =
         consoleY = worldY p
     }
 
-drawWorld :: ConsoleWorld -> IO ()
-drawWorld w = do
-    inFog
-    mapM_ draw $ fog w
-
-    inSight
-    mapM_ draw $ seen w
-    draw $ viewer w
+drawWorld :: ConsoleWorld -> DConsole
+drawWorld w =
+    DrawObjects Fog (fog w).
+    DrawObjects InSight (seen w ++ [viewer w])
 
 updateVision :: ConsoleWorld -> ConsoleWorld
 updateVision w =

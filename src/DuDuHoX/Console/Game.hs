@@ -1,8 +1,9 @@
 module DuDuHoX.Console.Game where
 
-import           Control.Monad         (liftM)
+import           Control.Monad             (liftM)
 import           DuDuHoX.Console.Core
 import           DuDuHoX.Console.Interface
+import           DuDuHoX.Console.Monad
 import           DuDuHoX.Console.World
 import           DuDuHoX.Game
 import           DuDuHoX.World
@@ -10,13 +11,13 @@ import           DuDuHoX.World
 game :: World -> IO ()
 game w = do
     initConsole
-    drawConsoleInterface
+    runConsole drawConsoleInterface
     gameLoop $ mkWorld w
     freeConsole
 
 gameLoop :: ConsoleWorld -> IO ()
 gameLoop w = do
-    drawWorldInterface w
+    runConsole $ drawWorldInterface w
     if won (world w) then win else gameLoop' w
 
 gameLoop' :: ConsoleWorld -> IO ()
