@@ -1,8 +1,9 @@
-* DuDuHoX
+DuDuHoX
+=======
 
 Making a maze game in order to learn Haskell.
 
-** Game
+## Game ##
 
 - Player is represented by '@'.
 - Player can move around pressing W, A, S and D keys.
@@ -10,9 +11,9 @@ Making a maze game in order to learn Haskell.
 - Player can quit the game pressing Q key.
 - To win the game, move on top of exit (represented by '!').
 
-** Progress
+## Progress ##
 
-*** OK:
+### OK ###
 - Movement.
 - Quitting.
 - Winning.
@@ -23,7 +24,7 @@ Making a maze game in order to learn Haskell.
 - User interface (world display area, controls, message area).
 - World scrolling.
 
-*** Things to do:
+### Things to do ###
 - Graphical world editing.
   - Save, load, play ...
 - Keys & doors.
