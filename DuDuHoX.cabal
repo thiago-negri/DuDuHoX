@@ -11,7 +11,8 @@ executable DuDuHoX
                    base >= 4,
                    ansi-terminal,
                    transformers,
-                   bytestring
+                   bytestring,
+                   free
   ghc-options:     -Wall
   other-modules:   
                    DuDuHoX.World,
@@ -20,11 +21,10 @@ executable DuDuHoX
                    DuDuHoX.World.Builder,
                    DuDuHoX.Util.Bresenham,
                    DuDuHoX.Console.World,
-                   DuDuHoX.Console.Core,
                    DuDuHoX.Console.Game,
                    DuDuHoX.Console.Interface,
                    DuDuHoX.World.Base,
                    DuDuHoX.Console,
-                   DuDuHoX.Console.Monad,
-                   DuDuHoX.Console.Types
+                   DuDuHoX.Console.Types,
+                   DuDuHoX.Console.IORunner
 

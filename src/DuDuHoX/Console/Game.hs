@@ -1,46 +1,35 @@
 module DuDuHoX.Console.Game where
 
-import           Control.Monad             (liftM)
-import           DuDuHoX.Console.Core
 import           DuDuHoX.Console.Interface
-import           DuDuHoX.Console.Monad
+import           DuDuHoX.Console.Types
 import           DuDuHoX.Console.World
 import           DuDuHoX.Game
 import           DuDuHoX.World
 
-game :: World -> IO ()
+game :: World -> DuDuHoXConsoleM ()
 game w = do
-    initConsole
-    runConsole drawConsoleInterface
-    gameLoop $ mkWorld w
-    freeConsole
+    drawConsoleInterface
+    gameLoop (mkWorld w)
 
-gameLoop :: ConsoleWorld -> IO ()
+gameLoop :: ConsoleWorld -> DuDuHoXConsoleM ()
 gameLoop w = do
-    runConsole $ drawWorldInterface w
-    if won (world w) then win else gameLoop' w
+    drawWorldInterface w
+    if won (world w)
+        then win
+        else gameLoop' w
 
-gameLoop' :: ConsoleWorld -> IO ()
-gameLoop' w = getInput >>= maybe (gameLoop' w) (handleUserInput w)
+gameLoop' :: ConsoleWorld -> DuDuHoXConsoleM ()
+gameLoop' w = do
+    i <- getUserInput'
+    handleUserInput w i
 
-win :: IO ()
+win :: DuDuHoXConsoleM ()
 win = do
     message "Voce venceu! Iupi!"
-    pause
+    pause'
 
-getInput :: IO (Maybe GameInput)
-getInput = liftM parseGameInput getChar
-
-parseGameInput :: Char -> Maybe GameInput
-parseGameInput 'w' = Just $ Movement MoveUp
-parseGameInput 's' = Just $ Movement MoveDown
-parseGameInput 'a' = Just $ Movement MoveLeft
-parseGameInput 'd' = Just $ Movement MoveRight
-parseGameInput 'q' = Just Quit
-parseGameInput _ = Nothing
-
-handleUserInput :: ConsoleWorld -> GameInput -> IO ()
-handleUserInput _ Quit = return ()
+handleUserInput :: ConsoleWorld -> GameInput -> DuDuHoXConsoleM ()
+handleUserInput _ Quit = end'
 handleUserInput consoleWorld (Movement direction) = gameLoop newConsoleWorld
     where
         newConsoleWorld = updateWorld consoleWorld newWorld
