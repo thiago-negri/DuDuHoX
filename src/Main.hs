@@ -1,11 +1,11 @@
 module Main where
 
-import qualified Data.ByteString       as BS
-import qualified Data.ByteString.Char8 as BS8
-import           DuDuHoX.Console (game)
-import           DuDuHoX.Console.Monad (runConsole)
-import           DuDuHoX.World (parseWorld)
-import           System.IO (hFlush, stdout)
+import qualified Data.ByteString          as BS
+import qualified Data.ByteString.Char8    as BS8
+import           DuDuHoX.Console          (game)
+import           DuDuHoX.Console.IORunner (runConsole)
+import           DuDuHoX.World            (parseWorld)
+import           System.IO                (hFlush, stdout)
 
 main :: IO ()
 main = do
