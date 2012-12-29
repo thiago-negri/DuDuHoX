@@ -14,18 +14,18 @@ Making a maze game in order to learn Haskell.
 ## Progress ##
 
 ### OK ###
-- Movement.
-- Quitting.
-- Winning.
-- World parsing.
-- Line of sight.
-- Fog of war.
-- Draw walkable floor.
-- User interface (world display area, controls, message area).
-- World scrolling.
+- Movement: W, A, S, D.
+- Quitting: Q.
+- Winning: Moving onto '!'.
+- World parsing: Matrix of char -> World.
+- Line of sight: Bresenham's algorithm.
+- Fog of war: Seen objects are greyed out when they go out of sight.
+- Draw walkable floor: Walkable floor ('.') is not the same as empty space (' '); Empty space do not block vision but can't be moved onto.
+- User interface (world display area, controls, message area): ASCII art.
+- World scrolling: Player is always at the center of the screen.
 
 ### Things to do ###
-- OpenGL interface.
-- Graphical world editing.
-  - Save, load, play ...
-- Keys & doors.
+- OpenGL interface: Throw away the ASCII art interface and pump up some nice OpenGL texturized quads.
+- Graphical world editing: Create new worlds inside the game.
+- Save game: Save your progress and resume later.
+- Interactive objects: keys, doors, levers, etc.
