@@ -25,6 +25,7 @@ Making a maze game in order to learn Haskell.
 - World scrolling.
 
 ### Things to do ###
+- OpenGL interface.
 - Graphical world editing.
   - Save, load, play ...
 - Keys & doors.
