@@ -28,4 +28,5 @@ Making a maze game in order to learn Haskell.
 - OpenGL interface: Throw away the ASCII art interface and pump up some nice OpenGL texturized quads.
 - Graphical world editing: Create new worlds inside the game.
 - Save game: Save your progress and resume later.
-- Interactive objects: keys, doors, levers, etc.
+- Interactive objects: keys and doors.
+- Circuits: Add levers connected to doors.
