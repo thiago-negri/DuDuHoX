@@ -26,6 +26,8 @@ Making a maze game in order to learn Haskell.
 
 ### Things to do ###
 - OpenGL interface: Throw away the ASCII art interface and pump up some nice OpenGL texturized quads.
+  - SDL: Tried. Pretty impossible to use on Windows. I've used it with C before, but integrating it with Haskell seems to be pretty immature now.
+  - OpenGL/GLUT/GLFW: Next try.
 - Graphical world editing: Create new worlds inside the game.
 - Save game: Save your progress and resume later.
 - Interactive objects: keys and doors.
