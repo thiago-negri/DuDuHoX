@@ -65,6 +65,9 @@ instance WorldObject WorldExit where
 
 instance WorldObject WorldPlayer where
     worldPosition = playerPosition
+    
+instance WorldObject WorldFloor where
+    worldPosition = floorPosition
 
 isWalkableAt :: World -> WorldPosition -> Bool
 world `isWalkableAt` position = exitPosition (worldExit world) == position || world `hasAnyFloorAt` position

@@ -13,6 +13,8 @@ module DuDuHoX.World
     ,WorldPosition
     ,WorldWall(WorldWall, wallPosition)
     ,WorldUpdate(PlayerMove)
+    ,WorldObject
+    ,worldPosition
     ,runUpdate
     ,won
     )

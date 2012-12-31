@@ -12,8 +12,11 @@ executable DuDuHoX
                    ansi-terminal,
                    transformers,
                    bytestring,
-                   free
-  ghc-options:     -Wall
+                   free,
+                   GLFW,
+                   OpenGL,
+                   directory
+  ghc-options:     -Wall -threaded
   other-modules:   
                    DuDuHoX.World,
                    Main,

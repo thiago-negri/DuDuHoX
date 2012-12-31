@@ -1,0 +1,122 @@
+{-# LANGUAGE RecordWildCards #-}
+
+module DuDuHoX.OpenGL.Game where
+
+import           Control.Monad
+import           Control.Concurrent
+import           Data.IORef
+
+import qualified Graphics.Rendering.OpenGL as GL
+import qualified Graphics.UI.GLFW          as GLFW
+
+import           DuDuHoX.OpenGL.Data
+import           DuDuHoX.OpenGL.Init
+import           DuDuHoX.World
+import           DuDuHoX.Game
+
+game :: World -> IO ()
+game w = do
+    w' <- newIORef w
+    context <- mkContext keyboardCallback w'
+    initGL context
+    drawWorld w
+    GLFW.swapBuffers
+    loop context
+    releaseGL
+
+loop :: DuDuHoXGLContext -> IO ()
+loop (c@DuDuHoXGLContext{..}) = do
+    GLFW.waitEvents
+
+    -- check for user input
+    input <- tryTakeMVar userInput
+    case input of
+        Just Quit -> writeIORef quit True
+        Just (Movement m) -> do 
+            world' <- readIORef world
+            let newWorld = runUpdate world' (PlayerMove m)
+            writeIORef world newWorld
+            writeIORef dirty True
+        _ -> return ()
+
+    -- redraw screen if dirty
+    d <- readIORef dirty
+    when d $ do
+        world' <- readIORef world
+        drawWorld world'
+        when (won world') drawWin
+        GLFW.swapBuffers
+        writeIORef dirty False
+        
+    -- check if we need to quit the loop
+    q <- readIORef quit
+    unless q $ loop c
+
+keyboardCallback :: MVar GameInput -> GLFW.KeyCallback
+keyboardCallback userInput k e =
+    when (e == GLFW.Release) $ 
+        case k of
+            GLFW.CharKey 'Q' -> putMVar userInput Quit
+            GLFW.CharKey 'W' -> putMVar userInput $ Movement MoveUp
+            GLFW.CharKey 'A' -> putMVar userInput $ Movement MoveLeft
+            GLFW.CharKey 'S' -> putMVar userInput $ Movement MoveDown
+            GLFW.CharKey 'D' -> putMVar userInput $ Movement MoveRight
+            _ -> return ()
+
+drawWin :: IO ()
+drawWin = do
+    GL.translate $ vector3 10 45 0
+    GL.rotate 180 $ vector3 1 0 0
+    GLFW.renderString GLFW.Fixed8x16 "Você venceu!"
+    GL.rotate 180 $ vector3 (-1) 0 0
+    GL.translate $ vector3 (-10) (-45) 0
+
+drawWorld :: World -> IO ()
+drawWorld w = do
+    GL.clear [GL.ColorBuffer]
+
+    -- floors
+    GL.color $ color3 0 1 0
+    mapM_ drawQuad (worldFloors w)
+
+    -- walls
+    GL.color $ color3 1 0 0
+    mapM_ drawQuad (worldWalls w)
+
+    -- exit
+    GL.color $ color3 1 1 0
+    drawQuad (worldExit w)
+
+    -- player
+    GL.color $ color3 0.6 0.6 0.6
+    drawQuad (worldPlayer w)
+
+drawQuad :: (WorldObject a) => a -> IO ()
+drawQuad f = do
+    GL.translate $ mkVector (worldPosition f)
+    GL.renderPrimitive GL.Quads $ do
+        GL.vertex $ vertex3 0 20 0
+        GL.vertex $ vertex3 0 0 0
+        GL.vertex $ vertex3 20 0 0
+        GL.vertex $ vertex3 20 20 0
+    GL.translate $ mkNegVector (worldPosition f)
+    return ()
+
+mkVector :: WorldPosition -> GL.Vector3 GL.GLfloat
+mkVector p = GL.Vector3 x y 0
+    where x = fromIntegral (worldX p) * 20
+          y = 50 + fromIntegral (worldY p) * 20
+
+mkNegVector :: WorldPosition -> GL.Vector3 GL.GLfloat
+mkNegVector p = GL.Vector3 x y 0
+    where x = fromIntegral (worldX p) * (-20)
+          y = (-50) + fromIntegral (worldY p) * (-20)
+
+vertex3 :: GL.GLfloat -> GL.GLfloat -> GL.GLfloat -> GL.Vertex3 GL.GLfloat
+vertex3 = GL.Vertex3
+
+color3 :: GL.GLfloat -> GL.GLfloat -> GL.GLfloat -> GL.Color3 GL.GLfloat
+color3 = GL.Color3
+
+vector3 :: GL.GLfloat -> GL.GLfloat -> GL.GLfloat -> GL.Vector3 GL.GLfloat
+vector3 = GL.Vector3
