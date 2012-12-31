@@ -23,11 +23,11 @@ Making a maze game in order to learn Haskell.
 - Draw walkable floor: Walkable floor ('.') is not the same as empty space (' '); Empty space do not block vision but can't be moved onto.
 - User interface (world display area, controls, message area): ASCII art.
 - World scrolling: Player is always at the center of the screen.
+- Console user interface: The first release, with all features.
+- OpenGL user interface: Playable, still missing features of the Console version.
 
 ### Things to do ###
-- OpenGL interface: Throw away the ASCII art interface and pump up some nice OpenGL texturized quads.
-  - SDL: Tried. Pretty impossible to use on Windows. I've used it with C before, but integrating it with Haskell seems to be pretty immature now.
-  - OpenGL/GLUT/GLFW: Next try.
+- Improve OpenGL user interface: Add features from the Console version (line of sight, fog of war, world scrolling, ...).
 - Graphical world editing: Create new worlds inside the game.
 - Save game: Save your progress and resume later.
 - Interactive objects: keys and doors.
