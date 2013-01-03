@@ -64,12 +64,11 @@ keyboardCallback userInput k e =
             _ -> return ()
 
 drawWin :: IO ()
-drawWin = do
-    GL.translate $ vector3 10 45 0
-    GL.rotate 180 $ vector3 1 0 0
-    GLFW.renderString GLFW.Fixed8x16 "Você venceu!"
-    GL.rotate 180 $ vector3 (-1) 0 0
-    GL.translate $ vector3 (-10) (-45) 0
+drawWin =
+    GL.preservingMatrix $ do
+        GL.translate $ vector3 10 45 0
+        GL.rotate 180 $ vector3 1 0 0
+        GLFW.renderString GLFW.Fixed8x16 "Você venceu!"
 
 drawWorld :: World -> IO ()
 drawWorld w = do
@@ -93,13 +92,13 @@ drawWorld w = do
 
 drawQuad :: (WorldObject a) => a -> IO ()
 drawQuad f = do
-    GL.translate $ mkVector (worldPosition f)
-    GL.renderPrimitive GL.Quads $ do
-        GL.vertex $ vertex3 0 20 0
-        GL.vertex $ vertex3 0 0 0
-        GL.vertex $ vertex3 20 0 0
-        GL.vertex $ vertex3 20 20 0
-    GL.translate $ mkNegVector (worldPosition f)
+    GL.preservingMatrix $ do
+        GL.translate $ mkVector (worldPosition f)
+        GL.renderPrimitive GL.Quads $ do
+            GL.vertex $ vertex3 0 20 0
+            GL.vertex $ vertex3 0 0 0
+            GL.vertex $ vertex3 20 0 0
+            GL.vertex $ vertex3 20 20 0
     return ()
 
 mkVector :: WorldPosition -> GL.Vector3 GL.GLfloat
