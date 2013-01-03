@@ -33,4 +33,4 @@ handleUserInput _ Quit = end'
 handleUserInput consoleWorld (Movement direction) = gameLoop newConsoleWorld
     where
         newConsoleWorld = updateWorld consoleWorld newWorld
-        newWorld = runUpdate (world consoleWorld) (PlayerMove direction)
+        newWorld = movePlayer (world consoleWorld) direction

@@ -34,7 +34,7 @@ loop (c@DuDuHoXGLContext{..}) = do
         Just Quit -> writeIORef quit True
         Just (Movement m) -> do 
             world' <- readIORef world
-            let newWorld = runUpdate world' (PlayerMove m)
+            let newWorld = movePlayer world' m
             writeIORef world newWorld
             writeIORef dirty True
         _ -> return ()

@@ -12,13 +12,13 @@ module DuDuHoX.World
     ,WorldPlayer(WorldPlayer, playerPosition)
     ,WorldPosition
     ,WorldWall(WorldWall, wallPosition)
-    ,WorldUpdate(PlayerMove)
     ,WorldObject
     ,worldPosition
-    ,runUpdate
+    ,movePlayer
     ,won
     )
 where
 
 import           DuDuHoX.World.Base
+import           DuDuHoX.World.Types
 import           DuDuHoX.World.Builder

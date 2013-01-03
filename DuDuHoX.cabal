@@ -29,5 +29,6 @@ executable DuDuHoX
                    DuDuHoX.World.Base,
                    DuDuHoX.Console,
                    DuDuHoX.Console.Types,
-                   DuDuHoX.Console.IORunner
+                   DuDuHoX.Console.IORunner,
+                   DuDuHoX.World.Types
 

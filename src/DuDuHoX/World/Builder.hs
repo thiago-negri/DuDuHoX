@@ -1,7 +1,7 @@
 module DuDuHoX.World.Builder (parseWorld) where
 
 import           Control.Monad.Trans.State.Lazy
-import           DuDuHoX.World.Base
+import           DuDuHoX.World.Types
 
 data WorldBuilder =
     WorldBuilder {
