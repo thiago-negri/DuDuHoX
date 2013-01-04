@@ -88,10 +88,18 @@ drawWorld w = do
     GL.color $ color3 0.6 0.6 0.6
     drawQuad (worldPlayer w)
 
+drawPlayer :: WorldPosition -> IO ()
+drawPlayer p = undefined
+
+drawAt :: WorldPosition -> IO () -> IO ()
+drawAt p a = 
+    GL.preservingMatrix $ do
+        GL.translate $ mkVector p
+        a
+
 drawQuad :: (WorldObject a) => a -> IO ()
 drawQuad f = do
-    GL.preservingMatrix $ do
-        GL.translate $ mkVector (worldPosition f)
+    drawAt (worldPosition f) $
         GL.renderPrimitive GL.Quads $ do
             GL.vertex $ vertex3 0 20 0
             GL.vertex $ vertex3 0 0 0
