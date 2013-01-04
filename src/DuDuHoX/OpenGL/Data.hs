@@ -18,7 +18,7 @@ data DuDuHoXGLContext = DuDuHoXGLContext {
 
 mkContext :: (MVar GameInput -> GLFW.KeyCallback) -> IORef World -> IO DuDuHoXGLContext
 mkContext keyCallback' world' = do
-    dirty' <- newIORef False
+    dirty' <- newIORef True
     quit' <- newIORef False
     userInput' <- newEmptyMVar
     return DuDuHoXGLContext {

@@ -19,13 +19,20 @@ game w = do
     w' <- newIORef w
     context <- mkContext keyboardCallback w'
     initGL context
-    drawWorld w
-    GLFW.swapBuffers
     loop context
     releaseGL
 
 loop :: DuDuHoXGLContext -> IO ()
 loop (c@DuDuHoXGLContext{..}) = do
+    -- redraw screen if dirty
+    d <- readIORef dirty
+    when d $ do
+        world' <- readIORef world
+        drawWorld world'
+        when (won world') drawWin
+        GLFW.swapBuffers
+        writeIORef dirty False
+        
     GLFW.waitEvents
 
     -- check for user input
@@ -38,15 +45,6 @@ loop (c@DuDuHoXGLContext{..}) = do
             writeIORef world newWorld
             writeIORef dirty True
         _ -> return ()
-
-    -- redraw screen if dirty
-    d <- readIORef dirty
-    when d $ do
-        world' <- readIORef world
-        drawWorld world'
-        when (won world') drawWin
-        GLFW.swapBuffers
-        writeIORef dirty False
         
     -- check if we need to quit the loop
     q <- readIORef quit
