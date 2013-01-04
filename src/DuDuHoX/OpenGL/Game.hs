@@ -66,7 +66,7 @@ drawWin =
     GL.preservingMatrix $ do
         GL.translate $ vector3 10 45 0
         GL.rotate 180 $ vector3 1 0 0
-        GLFW.renderString GLFW.Fixed8x16 "Você venceu!"
+        GLFW.renderString GLFW.Fixed8x16 "You won! Press 'Q' to quit."
 
 drawWorld :: World -> IO ()
 drawWorld w = do
