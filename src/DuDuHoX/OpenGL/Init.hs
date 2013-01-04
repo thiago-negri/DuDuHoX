@@ -21,6 +21,7 @@ initGL (DuDuHoXGLContext{..}) = do
     
     -- Enable antialiasing
     GL.lineSmooth $= GL.Enabled
+    GL.polygonSmooth $= GL.Enabled
     GL.blend      $= GL.Enabled
     GL.blendFunc  $= (GL.SrcAlpha, GL.OneMinusSrcAlpha)
     GL.lineWidth  $= 1.5
