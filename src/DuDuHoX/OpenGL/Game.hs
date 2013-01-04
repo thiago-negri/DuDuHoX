@@ -42,9 +42,10 @@ loop (c@DuDuHoXGLContext{..}) = do
         Just Quit -> writeIORef quit True
         Just (Movement m) -> do
             world' <- readIORef world
-            let newWorld = updateWorld world' (movePlayer (vWorld world') m)
-            writeIORef world newWorld
-            writeIORef dirty True
+            unless (won (vWorld world')) $
+                let newWorld = updateWorld world' (movePlayer (vWorld world') m) 
+                in do writeIORef world newWorld
+                      writeIORef dirty True
         _ -> return ()
 
     -- check if we need to quit the loop
