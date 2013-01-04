@@ -86,10 +86,36 @@ drawWorld w = do
 
     -- player
     GL.color $ color3 0.6 0.6 0.6
-    drawQuad (worldPlayer w)
+    drawPlayer (worldPosition $ worldPlayer w)
 
 drawPlayer :: WorldPosition -> IO ()
-drawPlayer p = undefined
+drawPlayer p =
+    drawAt p $ do
+        -- head
+        GL.renderPrimitive GL.Quads $ do
+            GL.vertex $ vertex3 7 7 0
+            GL.vertex $ vertex3 7 2 0
+            GL.vertex $ vertex3 13 2 0
+            GL.vertex $ vertex3 13 7 0
+        
+        -- body
+        GL.renderPrimitive GL.Lines $ do
+            GL.vertex $ vertex3 10 7 0
+            GL.vertex $ vertex3 10 13 0
+
+        -- arms
+        GL.renderPrimitive GL.Lines $ do
+            GL.vertex $ vertex3 7 9 0
+            GL.vertex $ vertex3 13 9 0
+            
+        -- legs
+        GL.renderPrimitive GL.Lines $ do
+            GL.vertex $ vertex3 10 13 0
+            GL.vertex $ vertex3 7 18 0
+            
+            GL.vertex $ vertex3 10 13 0
+            GL.vertex $ vertex3 13 18 0
+            
 
 drawAt :: WorldPosition -> IO () -> IO ()
 drawAt p a = 
