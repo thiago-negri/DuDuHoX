@@ -13,10 +13,11 @@ import           DuDuHoX.Game
 import           DuDuHoX.OpenGL.Data
 import           DuDuHoX.OpenGL.Init
 import           DuDuHoX.World
+import           DuDuHoX.World.Visible
 
 game :: World -> IO ()
 game w = do
-    w' <- newIORef w
+    w' <- newIORef (mkVisWorld w)
     context <- mkContext keyboardCallback w'
     initGL context
     loop context
@@ -29,7 +30,7 @@ loop (c@DuDuHoXGLContext{..}) = do
     when d $ do
         world' <- readIORef world
         drawWorld world'
-        when (won world') drawWin
+        when (won (vWorld world')) drawWin
         GLFW.swapBuffers
         writeIORef dirty False
 
@@ -41,7 +42,7 @@ loop (c@DuDuHoXGLContext{..}) = do
         Just Quit -> writeIORef quit True
         Just (Movement m) -> do
             world' <- readIORef world
-            let newWorld = movePlayer world' m
+            let newWorld = updateWorld world' (movePlayer (vWorld world') m)
             writeIORef world newWorld
             writeIORef dirty True
         _ -> return ()
@@ -68,21 +69,34 @@ drawWin =
         GL.rotate 180 $ vector3 1 0 0
         GLFW.renderString GLFW.Fixed8x16 "You won! Press 'Q' to quit."
 
-drawWorld :: World -> IO ()
+drawWorld :: VisibleWorld -> IO ()
 drawWorld w = do
     GL.clear [GL.ColorBuffer]
 
+    -- VISIBLE
+
     -- floors
-    mapM_ (drawFloor . worldPosition) (worldFloors w)
+    mapM_ (drawVisibleFloor . position) (filter (\o -> oType o == Floor) $ seen w)
 
     -- walls
-    mapM_ (drawWall . worldPosition) (worldWalls w)
+    mapM_ (drawVisibleWall . position) (filter (\o -> oType o == Wall) $ seen w)
 
     -- exit
-    drawExit (worldPosition $ worldExit w)
+    mapM_ (drawVisibleExit . position) (filter (\o -> oType o == Exit) $ seen w)
+    
+    -- FOG
+    
+    -- floors
+    mapM_ (drawFogFloor . position) (filter (\o -> oType o == Floor) $ fog w)
+
+    -- walls
+    mapM_ (drawFogWall . position) (filter (\o -> oType o == Wall) $ fog w)
+
+    -- exit
+    mapM_ (drawFogExit . position) (filter (\o -> oType o == Exit) $ fog w)
 
     -- player
-    drawPlayer (worldPosition $ worldPlayer w)
+    drawPlayer (position $ viewer w)
 
 drawPlayer :: WorldPosition -> IO ()
 drawPlayer p = do
@@ -113,14 +127,22 @@ drawPlayer p = do
             GL.vertex $ vertex3 10 13 0
             GL.vertex $ vertex3 13 18 0
 
-drawFloor :: WorldPosition -> IO ()
-drawFloor p = do
+drawVisibleFloor :: WorldPosition -> IO ()
+drawVisibleFloor p = drawFloor p True
+     
+drawFogFloor :: WorldPosition -> IO ()
+drawFogFloor p = drawFloor p False 
+
+drawFloor :: WorldPosition -> Bool -> IO ()
+drawFloor p vis = do
     -- base
-    GL.color $ color3 0.1 0.3 0
+    when vis $ GL.color $ color3 0.1 0.3 0
+    unless vis $ GL.color $ color3 0.05 0.15 0
     drawQuad p
 
     -- grass
-    GL.color $ color3 0 0.5 0
+    when vis $ GL.color $ color3 0 0.5 0
+    unless vis $ GL.color $ color3 0 0.25 0
     drawAt p $
         GL.renderPrimitive GL.Lines $ do
             -- \
@@ -155,14 +177,28 @@ drawFloor p = do
             GL.vertex $ vertex3 18 9 0
             GL.vertex $ vertex3 15 12 0
 
-drawWall :: WorldPosition -> IO ()
-drawWall p = do
+drawVisibleWall :: WorldPosition -> IO ()
+drawVisibleWall p = do
     GL.color $ color3 0.6 0.4 0
     drawQuad p
+    
+drawFogWall :: WorldPosition -> IO ()
+drawFogWall p = do
+    GL.color $ color3 0.3 0.2 0
+    drawQuad p
 
-drawExit :: WorldPosition -> IO ()
-drawExit p = do
+drawVisibleExit :: WorldPosition -> IO ()
+drawVisibleExit p = do
     GL.color $ color3 1 1 0
+    drawExit p
+
+drawFogExit :: WorldPosition -> IO ()
+drawFogExit p = do
+    GL.color $ color3 0.5 0.5 0
+    drawExit p
+    
+drawExit :: WorldPosition -> IO ()
+drawExit p =
     drawAt p $
         GL.renderPrimitive GL.Triangles $ do
             GL.vertex $ vertex3 10 8 0

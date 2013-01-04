@@ -6,17 +6,17 @@ import           Data.IORef
 import qualified Graphics.UI.GLFW   as GLFW
 
 import           DuDuHoX.Game
-import           DuDuHoX.World
+import           DuDuHoX.World.Visible
 
 data DuDuHoXGLContext = DuDuHoXGLContext {
     dirty :: IORef Bool -- ^ Should repaint the screen?
    ,userInput :: MVar GameInput -- ^ User input
    ,quit :: IORef Bool -- ^ Should quit the game?
    ,keyCallback :: GLFW.KeyCallback -- ^ Callback used when a key is pressed
-   ,world :: IORef World -- ^ The current state of the game
+   ,world :: IORef VisibleWorld -- ^ The current state of the game
 }
 
-mkContext :: (MVar GameInput -> GLFW.KeyCallback) -> IORef World -> IO DuDuHoXGLContext
+mkContext :: (MVar GameInput -> GLFW.KeyCallback) -> IORef VisibleWorld -> IO DuDuHoXGLContext
 mkContext keyCallback' world' = do
     dirty' <- newIORef True
     quit' <- newIORef False
