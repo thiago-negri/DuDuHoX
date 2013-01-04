@@ -77,10 +77,10 @@ allObjects w = seen w ++ fog w ++ unseen w
 
 translucid :: VisibleObject -> Bool
 translucid v = case oType v of
-    Wall -> False
+    Wall   -> False
     Player -> True
-    Exit -> True
-    Floor -> True
+    Exit   -> True
+    Floor  -> True
 
 filterFloorWallExit :: [VisibleObject] -> ([VisibleObject], [VisibleObject], [VisibleObject])
 filterFloorWallExit = go [] [] []
@@ -127,7 +127,10 @@ applyDeltaW delta w =
         unseen' = map (applyDeltaO delta) (unseen w)
 
 applyDeltaO :: WorldPosition -> VisibleObject -> VisibleObject
-applyDeltaO delta obj = obj { position = position' }
+applyDeltaO delta obj = 
+    obj { 
+        position = position' 
+    }
     where 
         position' = WorldPosition x' y'
         x' = x + deltaX
@@ -139,21 +142,15 @@ applyDeltaO delta obj = obj { position = position' }
 
 filterByArea :: VisibleWorld -> WorldPosition -> WorldPosition -> VisibleWorld
 filterByArea v topLeft bottomRight = 
-    VisibleWorld {
-        viewer = viewer',
+    v {
         seen = seen',
         fog = fog',
-        unseen = unseen',
-        vWorld = vWorld'
+        unseen = unseen'
     }
     where        
-        viewer' = viewer v
-        
         seen' = filter (inArea topLeft bottomRight) (seen v) 
         fog' = filter (inArea topLeft bottomRight) (fog v)
         unseen' = filter (inArea topLeft bottomRight) (unseen v)
-                 
-        vWorld' = vWorld v
 
 inArea :: WorldPosition -> WorldPosition -> VisibleObject -> Bool
 inArea topLeft bottomRight object = top <= y && bottom >= y && left <= x && right >= x
