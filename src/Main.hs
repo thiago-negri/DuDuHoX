@@ -3,11 +3,11 @@ module Main where
 import qualified Data.ByteString          as BS
 import qualified Data.ByteString.Char8    as BS8
 import qualified DuDuHoX.Console          as C
-import qualified DuDuHoX.OpenGL.Game      as OGL
 import           DuDuHoX.Console.IORunner (runConsole)
-import           DuDuHoX.World            (parseWorld, World)
+import qualified DuDuHoX.OpenGL.Game      as OGL
+import           DuDuHoX.World            (World, parseWorld)
+import           System.Directory         (doesFileExist)
 import           System.IO                (hFlush, stdout)
-import System.Directory (doesFileExist)
 
 data UserInterface = Console | OpenGL
 
@@ -15,7 +15,7 @@ main :: IO ()
 main = do
     userInterface <- getUserInterface
     world <- getWorld
-    
+
     case userInterface of
         Console -> runConsole . C.game $ world
         OpenGL -> OGL.game world
@@ -50,4 +50,4 @@ getWorld = do
         else do
             putStrLn "Map not found"
             getWorld
-        
+

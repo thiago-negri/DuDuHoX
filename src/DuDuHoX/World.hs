@@ -20,5 +20,5 @@ module DuDuHoX.World
 where
 
 import           DuDuHoX.World.Base
-import           DuDuHoX.World.Types
 import           DuDuHoX.World.Builder
+import           DuDuHoX.World.Types

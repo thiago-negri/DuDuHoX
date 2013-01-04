@@ -1,7 +1,7 @@
 module DuDuHoX.World.Base where
 
 import           DuDuHoX.Game
-import DuDuHoX.World.Types
+import           DuDuHoX.World.Types
 
 (|+|) :: WorldPosition -> WorldPosition -> WorldPosition
 a |+| b = WorldPosition (worldX a + worldX b) (worldY a + worldY b)
@@ -23,7 +23,7 @@ instance WorldObject WorldExit where
 
 instance WorldObject WorldPlayer where
     worldPosition = playerPosition
-    
+
 instance WorldObject WorldFloor where
     worldPosition = floorPosition
 

@@ -78,7 +78,7 @@ drawWorld w = do
     mapM_ (drawVisibleFloor . position) vFloors
     mapM_ (drawVisibleWall . position) vWalls
     mapM_ (drawVisibleExit . position) vExits
-    
+
     -- FOG
     let (fFloors, fWalls, fExits) = filterFloorWallExit $ fog w
     mapM_ (drawFogFloor . position) fFloors
@@ -119,9 +119,9 @@ drawPlayer p = do
 
 drawVisibleFloor :: WorldPosition -> IO ()
 drawVisibleFloor p = drawFloor p True
-     
+
 drawFogFloor :: WorldPosition -> IO ()
-drawFogFloor p = drawFloor p False 
+drawFogFloor p = drawFloor p False
 
 drawFloor :: WorldPosition -> Bool -> IO ()
 drawFloor p vis = do
@@ -171,7 +171,7 @@ drawVisibleWall :: WorldPosition -> IO ()
 drawVisibleWall p = do
     GL.color $ color3 0.6 0.4 0
     drawQuad p
-    
+
 drawFogWall :: WorldPosition -> IO ()
 drawFogWall p = do
     GL.color $ color3 0.3 0.2 0
@@ -186,7 +186,7 @@ drawFogExit :: WorldPosition -> IO ()
 drawFogExit p = do
     GL.color $ color3 0.5 0.5 0
     drawExit p
-    
+
 drawExit :: WorldPosition -> IO ()
 drawExit p =
     drawAt p $
@@ -194,23 +194,23 @@ drawExit p =
             GL.vertex $ vertex3 10 8 0
             GL.vertex $ vertex3 16 17 0
             GL.vertex $ vertex3 10 13 0
-            
+
             GL.vertex $ vertex3 10 8 0
             GL.vertex $ vertex3 4 17 0
             GL.vertex $ vertex3 10 13 0
-            
+
             GL.vertex $ vertex3 10 8 0
             GL.vertex $ vertex3 18 8 0
             GL.vertex $ vertex3 10 12 0
-            
+
             GL.vertex $ vertex3 10 8 0
             GL.vertex $ vertex3 2 8 0
             GL.vertex $ vertex3 10 12 0
-            
+
             GL.vertex $ vertex3 7 10 0
             GL.vertex $ vertex3 10 2 0
             GL.vertex $ vertex3 13 10 0
-            
+
 
 drawAt :: WorldPosition -> IO () -> IO ()
 drawAt p a =

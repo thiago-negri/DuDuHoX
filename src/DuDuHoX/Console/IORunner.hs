@@ -5,7 +5,7 @@ module DuDuHoX.Console.IORunner
 where
 
 import           Control.Monad         (liftM, void)
-import           Control.Monad.Free    (Free(..))
+import           Control.Monad.Free    (Free (..))
 import           DuDuHoX.Console.Types
 import           DuDuHoX.Game
 import           DuDuHoX.World.Types

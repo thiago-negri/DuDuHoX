@@ -3,7 +3,7 @@ module DuDuHoX.OpenGL.Data where
 import           Control.Concurrent
 import           Data.IORef
 
-import qualified Graphics.UI.GLFW   as GLFW
+import qualified Graphics.UI.GLFW      as GLFW
 
 import           DuDuHoX.Game
 import           DuDuHoX.World.Visible
