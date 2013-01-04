@@ -73,23 +73,22 @@ drawWorld w = do
     GL.clear [GL.ColorBuffer]
 
     -- floors
-    GL.color $ color3 0 1 0
-    mapM_ drawQuad (worldFloors w)
+    mapM_ (drawFloor . worldPosition) (worldFloors w)
 
     -- walls
     GL.color $ color3 1 0 0
-    mapM_ drawQuad (worldWalls w)
+    mapM_ (drawQuad . worldPosition) (worldWalls w)
 
     -- exit
     GL.color $ color3 1 1 0
-    drawQuad (worldExit w)
+    drawQuad (worldPosition $ worldExit w)
 
     -- player
-    GL.color $ color3 0.6 0.6 0.6
     drawPlayer (worldPosition $ worldPlayer w)
 
 drawPlayer :: WorldPosition -> IO ()
-drawPlayer p =
+drawPlayer p = do
+    GL.color $ color3 0.9 0.9 0.9
     drawAt p $ do
         -- head
         GL.renderPrimitive GL.Quads $ do
@@ -115,7 +114,48 @@ drawPlayer p =
             
             GL.vertex $ vertex3 10 13 0
             GL.vertex $ vertex3 13 18 0
+
+drawFloor :: WorldPosition -> IO ()
+drawFloor p = do
+    -- base
+    GL.color $ color3 0.1 0.3 0
+    drawQuad p
+    
+    -- grass
+    GL.color $ color3 0 0.5 0
+    drawAt p $
+        GL.renderPrimitive GL.Lines $ do
+            -- \
+            GL.vertex $ vertex3 3 0 0
+            GL.vertex $ vertex3 5 2 0
             
+            GL.vertex $ vertex3 0 17 0
+            GL.vertex $ vertex3 3 20 0
+            
+            GL.vertex $ vertex3 6 3 0
+            GL.vertex $ vertex3 9 6 0
+            
+            GL.vertex $ vertex3 10 10 0
+            GL.vertex $ vertex3 13 13 0
+            
+            GL.vertex $ vertex3 17 5 0
+            GL.vertex $ vertex3 20 8 0
+            
+            GL.vertex $ vertex3 13 15 0
+            GL.vertex $ vertex3 16 18 0
+            
+            GL.vertex $ vertex3 6 15 0
+            GL.vertex $ vertex3 9 18 0
+            
+            -- /
+            GL.vertex $ vertex3 9 13 0
+            GL.vertex $ vertex3 6 16 0
+            
+            GL.vertex $ vertex3 5 7 0
+            GL.vertex $ vertex3 2 10 0
+            
+            GL.vertex $ vertex3 18 9 0
+            GL.vertex $ vertex3 15 12 0
 
 drawAt :: WorldPosition -> IO () -> IO ()
 drawAt p a = 
@@ -123,9 +163,9 @@ drawAt p a =
         GL.translate $ mkVector p
         a
 
-drawQuad :: (WorldObject a) => a -> IO ()
-drawQuad f = do
-    drawAt (worldPosition f) $
+drawQuad :: WorldPosition -> IO ()
+drawQuad p = do
+    drawAt p $
         GL.renderPrimitive GL.Quads $ do
             GL.vertex $ vertex3 0 20 0
             GL.vertex $ vertex3 0 0 0
