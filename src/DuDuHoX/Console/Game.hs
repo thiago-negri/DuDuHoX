@@ -2,23 +2,23 @@ module DuDuHoX.Console.Game where
 
 import           DuDuHoX.Console.Interface
 import           DuDuHoX.Console.Types
-import           DuDuHoX.Console.World
 import           DuDuHoX.Game
 import           DuDuHoX.World
+import           DuDuHoX.World.Visible
 
 game :: World -> DuDuHoXConsoleM ()
 game w = do
     drawConsoleInterface
-    gameLoop (mkWorld w)
+    gameLoop (mkVisWorld w)
 
-gameLoop :: ConsoleWorld -> DuDuHoXConsoleM ()
+gameLoop :: VisibleWorld -> DuDuHoXConsoleM ()
 gameLoop w = do
     drawWorldInterface w
-    if won (world w)
+    if won (vWorld w)
         then win
         else gameLoop' w
 
-gameLoop' :: ConsoleWorld -> DuDuHoXConsoleM ()
+gameLoop' :: VisibleWorld -> DuDuHoXConsoleM ()
 gameLoop' w = do
     i <- getUserInput'
     handleUserInput w i
@@ -28,9 +28,9 @@ win = do
     message "Voce venceu! Iupi!"
     pause'
 
-handleUserInput :: ConsoleWorld -> GameInput -> DuDuHoXConsoleM ()
+handleUserInput :: VisibleWorld -> GameInput -> DuDuHoXConsoleM ()
 handleUserInput _ Quit = end'
 handleUserInput consoleWorld (Movement direction) = gameLoop newConsoleWorld
     where
         newConsoleWorld = updateWorld consoleWorld newWorld
-        newWorld = movePlayer (world consoleWorld) direction
+        newWorld = movePlayer (vWorld consoleWorld) direction

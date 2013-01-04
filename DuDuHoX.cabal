@@ -23,7 +23,6 @@ executable DuDuHoX
                    DuDuHoX.Game,
                    DuDuHoX.World.Builder,
                    DuDuHoX.Util.Bresenham,
-                   DuDuHoX.Console.World,
                    DuDuHoX.Console.Game,
                    DuDuHoX.Console.Interface,
                    DuDuHoX.World.Base,

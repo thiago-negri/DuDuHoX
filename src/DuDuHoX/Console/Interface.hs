@@ -2,15 +2,16 @@ module DuDuHoX.Console.Interface where
 
 import           Control.Monad.Trans.State.Lazy
 import           DuDuHoX.Console.Types
-import           DuDuHoX.Console.World
+import           DuDuHoX.World.Types
+import           DuDuHoX.World.Visible
 
 drawConsoleInterface :: DuDuHoXConsoleM ()
 drawConsoleInterface = do
     -- World area
-    drawBox' (ConsolePosition 1 1) 40 11
+    drawBox' (ConsolePosition 2 1) 39 11
 
     -- Message area
-    drawBox' (ConsolePosition 1 15) 40 1
+    drawBox' (ConsolePosition 2 15) 39 1
 
     -- Controls
     drawText' (ConsolePosition 46 9) "(W)"
@@ -18,54 +19,20 @@ drawConsoleInterface = do
     drawText' (ConsolePosition 46 11) "(S)"
     drawText' (ConsolePosition 46 16) "(Q)uit"
 
-drawWorldInterface :: ConsoleWorld -> DuDuHoXConsoleM ()
+drawWorldInterface :: VisibleWorld -> DuDuHoXConsoleM ()
 drawWorldInterface w = do
-    clearBox' (ConsolePosition 2 2) 40 10
+    clearBox' (ConsolePosition 3 2) 39 10
     drawWorld (execState updateWorldToInterface w)
 
-updateWorldToInterface :: State ConsoleWorld ()
+drawWorld :: VisibleWorld -> DuDuHoXConsoleM ()
+drawWorld w = do
+    drawObjects' Fog (fog w)
+    drawObjects' InSight (seen w ++ [viewer w])
+
+updateWorldToInterface :: State VisibleWorld ()
 updateWorldToInterface = do
-    modify $ \w -> applyDelta w (position . viewer $ w)
-    modify $ flip applyDelta worldCenter
-    modify $ limitWorld (ConsolePosition 2 2) (ConsolePosition 41 12)
-    where
-        worldCenter = ConsolePosition 21 7
+    modify $ limitViewer (WorldPosition 19 5)
+    modify $ applyDeltaW (WorldPosition 3 2)
 
 message :: String -> DuDuHoXConsoleM ()
-message = drawText' (ConsolePosition 2 16)
-
-applyDelta :: ConsoleWorld -> ConsolePosition -> ConsoleWorld
-applyDelta w p =
-    w {
-        viewer = viewer',
-        seen = seen',
-        fog = fog',
-        unseen = unseen'
-    }
-    where
-        viewer' = applyDeltaPosition p (viewer w)
-        seen' = map (applyDeltaPosition p) (seen w)
-        fog' = map (applyDeltaPosition p) (fog w)
-        unseen' = map (applyDeltaPosition p) (unseen w)
-
-applyDeltaPosition :: ConsolePosition -> ConsoleObject -> ConsoleObject
-applyDeltaPosition p o = o { position = position' }
-    where position' = p `cpMinus` position o
-
-limitWorld :: ConsolePosition -> ConsolePosition -> ConsoleWorld -> ConsoleWorld
-limitWorld ur ll w =
-    w {
-        seen = seen',
-        fog = fog',
-        unseen = unseen'
-    }
-    where
-        seen' = filter (inLimit ur ll) (seen w)
-        fog' = filter (inLimit ur ll) (fog w)
-        unseen' = filter (inLimit ur ll) (unseen w)
-
-inLimit :: ConsolePosition -> ConsolePosition -> ConsoleObject -> Bool
-inLimit (ConsolePosition right up) (ConsolePosition left down) o =
-    let (ConsolePosition x y) = position o in
-        x >= right && x <= left &&
-        y >= up && y <= down
+message = drawText' (ConsolePosition 3 16)

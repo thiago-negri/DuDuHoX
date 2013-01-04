@@ -29,7 +29,6 @@ Making a maze game in order to learn Haskell.
 ### Things to do ###
 - Improve user interfaces code: Make a core game module that handles the state of the game. The user interfaces modules should only provide "receive input" and "render" functions.
 - Improve OpenGL user interface: Add features from the Console version (world scrolling, ...).
-- Use the World.Visible package for the Console version.
 - Graphical world editing: Create new worlds inside the game.
 - Save game: Save your progress and resume later.
 - Interactive objects: keys and doors.

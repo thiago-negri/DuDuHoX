@@ -2,14 +2,7 @@ module DuDuHoX.Console.Types where
 
 import           Control.Monad.Free
 import           DuDuHoX.Game
-
-data ConsoleObject =
-    ConsoleObject {
-        graphic :: Char,
-        translucid :: Bool,
-        position :: ConsolePosition
-    }
-    deriving (Eq)
+import           DuDuHoX.World.Visible
 
 data ConsolePosition =
     ConsolePosition {
@@ -28,7 +21,7 @@ data ConsoleVisibility = InSight | Fog
 
 data DuDuHoXConsole next =
     ClearScreen { next :: next }
-  | DrawObjects { visibility :: ConsoleVisibility, objects :: [ConsoleObject], next :: next }
+  | DrawObjects { visibility :: ConsoleVisibility, objects :: [VisibleObject], next :: next }
   | ClearBox { corner :: ConsolePosition, height :: Int, width :: Int, next :: next }
   | DrawBox { corner :: ConsolePosition, height :: Int, width :: Int, next :: next }
   | DrawText { corner :: ConsolePosition, text :: String, next :: next }
@@ -51,7 +44,7 @@ type DuDuHoXConsoleM a = Free DuDuHoXConsole a
 clearScreen' :: DuDuHoXConsoleM ()
 clearScreen' = liftF (ClearScreen ())
 
-drawObjects' :: ConsoleVisibility -> [ConsoleObject] -> DuDuHoXConsoleM ()
+drawObjects' :: ConsoleVisibility -> [VisibleObject] -> DuDuHoXConsoleM ()
 drawObjects' v o = liftF (DrawObjects v o ())
 
 clearBox' :: ConsolePosition -> Int -> Int -> DuDuHoXConsoleM ()

@@ -8,6 +8,8 @@ import           Control.Monad         (liftM, void)
 import           Control.Monad.Free    (Free(..))
 import           DuDuHoX.Console.Types
 import           DuDuHoX.Game
+import           DuDuHoX.World.Types
+import           DuDuHoX.World.Visible
 import           System.Console.ANSI
 import           System.IO
 
@@ -49,8 +51,19 @@ inSight = setSGR [SetColor Foreground Dull Black]
 inFog :: IO ()
 inFog = setSGR [SetColor Foreground Vivid Black]
 
-draw :: ConsoleObject -> IO ()
-draw o = graphic o `putCharAt` position o
+draw :: VisibleObject -> IO ()
+draw o = graphic o `putCharAt` (mkPos . position $ o)
+
+mkPos :: WorldPosition -> ConsolePosition
+mkPos p = ConsolePosition { consoleX = worldX p, consoleY = worldY p }
+
+graphic :: VisibleObject -> Char
+graphic o =
+    case oType o of
+        Player -> '@'
+        Floor -> '.'
+        Exit -> '!'
+        Wall -> '#'
 
 putCharAt :: Char -> ConsolePosition -> IO ()
 putCharAt c p = setCursorPosition (consoleY p) (consoleX p) >> putChar c

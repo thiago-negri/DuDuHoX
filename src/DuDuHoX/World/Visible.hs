@@ -90,3 +90,78 @@ filterFloorWallExit = go [] [] []
                                 Wall -> let w' = (x:w) in w' `seq` go f w' e xs
                                 Exit -> let e' = (x:e) in e' `seq`go f w e' xs
                                 Player -> go f w e xs
+
+limitViewer :: WorldPosition -> VisibleWorld -> VisibleWorld
+limitViewer p v =
+    v'
+    where 
+        viewerPosition = position $ viewer v
+        viewerX = worldX viewerPosition 
+        viewerY = worldY viewerPosition
+         
+        minX = viewerX - worldX p
+        minY = viewerY - worldY p
+        topLeft = WorldPosition minX minY
+        
+        maxX = viewerX + worldX p
+        maxY = viewerY + worldY p
+        bottomRight = WorldPosition maxX maxY
+        
+        areaWorld = filterByArea v topLeft bottomRight
+        
+        delta = WorldPosition (minX * (-1)) (minY * (-1))
+        v' = applyDeltaW delta areaWorld        
+
+applyDeltaW :: WorldPosition -> VisibleWorld -> VisibleWorld
+applyDeltaW delta w =
+    w {
+        viewer = viewer',
+        seen = seen',
+        fog = fog',
+        unseen = unseen'
+    }
+    where
+        viewer' = applyDeltaO delta $ viewer w
+        seen' = map (applyDeltaO delta) (seen w)
+        fog' = map (applyDeltaO delta) (fog w)
+        unseen' = map (applyDeltaO delta) (unseen w)
+
+applyDeltaO :: WorldPosition -> VisibleObject -> VisibleObject
+applyDeltaO delta obj = obj { position = position' }
+    where 
+        position' = WorldPosition x' y'
+        x' = x + deltaX
+        y' = y + deltaY
+        deltaX = worldX delta
+        deltaY = worldY delta
+        x = worldX $ position obj
+        y = worldY $ position obj
+
+filterByArea :: VisibleWorld -> WorldPosition -> WorldPosition -> VisibleWorld
+filterByArea v topLeft bottomRight = 
+    VisibleWorld {
+        viewer = viewer',
+        seen = seen',
+        fog = fog',
+        unseen = unseen',
+        vWorld = vWorld'
+    }
+    where        
+        viewer' = viewer v
+        
+        seen' = filter (inArea topLeft bottomRight) (seen v) 
+        fog' = filter (inArea topLeft bottomRight) (fog v)
+        unseen' = filter (inArea topLeft bottomRight) (unseen v)
+                 
+        vWorld' = vWorld v
+
+inArea :: WorldPosition -> WorldPosition -> VisibleObject -> Bool
+inArea topLeft bottomRight object = top <= y && bottom >= y && left <= x && right >= x
+    where 
+        top = worldY topLeft
+        left = worldX topLeft
+        right = worldX bottomRight
+        bottom = worldY bottomRight
+        oPosition = position object
+        y = worldY oPosition
+        x = worldX oPosition
