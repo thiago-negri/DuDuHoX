@@ -79,8 +79,7 @@ drawWorld w = do
     mapM_ (drawWall . worldPosition) (worldWalls w)
 
     -- exit
-    GL.color $ color3 1 1 0
-    drawQuad (worldPosition $ worldExit w)
+    drawExit (worldPosition $ worldExit w)
 
     -- player
     drawPlayer (worldPosition $ worldPlayer w)
@@ -160,6 +159,32 @@ drawWall :: WorldPosition -> IO ()
 drawWall p = do
     GL.color $ color3 0.6 0.4 0
     drawQuad p
+
+drawExit :: WorldPosition -> IO ()
+drawExit p = do
+    GL.color $ color3 1 1 0
+    drawAt p $
+        GL.renderPrimitive GL.Triangles $ do
+            GL.vertex $ vertex3 10 8 0
+            GL.vertex $ vertex3 16 17 0
+            GL.vertex $ vertex3 10 13 0
+            
+            GL.vertex $ vertex3 10 8 0
+            GL.vertex $ vertex3 4 17 0
+            GL.vertex $ vertex3 10 13 0
+            
+            GL.vertex $ vertex3 10 8 0
+            GL.vertex $ vertex3 18 8 0
+            GL.vertex $ vertex3 10 12 0
+            
+            GL.vertex $ vertex3 10 8 0
+            GL.vertex $ vertex3 2 8 0
+            GL.vertex $ vertex3 10 12 0
+            
+            GL.vertex $ vertex3 7 10 0
+            GL.vertex $ vertex3 10 2 0
+            GL.vertex $ vertex3 13 10 0
+            
 
 drawAt :: WorldPosition -> IO () -> IO ()
 drawAt p a =
