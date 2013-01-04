@@ -19,7 +19,7 @@ Making a maze game in order to learn Haskell.
 - Winning: Moving onto '!'.
 - World parsing: Matrix of char -> World.
 - Line of sight: Bresenham's algorithm.
-- Fog of war: Seen objects are greyed out when they go out of sight.
+- Fog of war: Seen objects are grayed out when they go out of sight.
 - Draw walkable floor: Walkable floor ('.') is not the same as empty space (' '); Empty space do not block vision but can't be moved onto.
 - User interface (world display area, controls, message area): ASCII art.
 - World scrolling: Player is always at the center of the screen.
