@@ -74,26 +74,16 @@ drawWorld w = do
     GL.clear [GL.ColorBuffer]
 
     -- VISIBLE
-
-    -- floors
-    mapM_ (drawVisibleFloor . position) (filter (\o -> oType o == Floor) $ seen w)
-
-    -- walls
-    mapM_ (drawVisibleWall . position) (filter (\o -> oType o == Wall) $ seen w)
-
-    -- exit
-    mapM_ (drawVisibleExit . position) (filter (\o -> oType o == Exit) $ seen w)
+    let (vFloors, vWalls, vExits) = filterFloorWallExit $ seen w
+    mapM_ (drawVisibleFloor . position) vFloors
+    mapM_ (drawVisibleWall . position) vWalls
+    mapM_ (drawVisibleExit . position) vExits
     
     -- FOG
-    
-    -- floors
-    mapM_ (drawFogFloor . position) (filter (\o -> oType o == Floor) $ fog w)
-
-    -- walls
-    mapM_ (drawFogWall . position) (filter (\o -> oType o == Wall) $ fog w)
-
-    -- exit
-    mapM_ (drawFogExit . position) (filter (\o -> oType o == Exit) $ fog w)
+    let (fFloors, fWalls, fExits) = filterFloorWallExit $ fog w
+    mapM_ (drawFogFloor . position) fFloors
+    mapM_ (drawFogWall . position) fWalls
+    mapM_ (drawFogExit . position) fExits
 
     -- player
     drawPlayer (position $ viewer w)

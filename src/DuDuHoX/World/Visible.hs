@@ -81,3 +81,12 @@ translucid v = case oType v of
     Player -> True
     Exit -> True
     Floor -> True
+
+filterFloorWallExit :: [VisibleObject] -> ([VisibleObject], [VisibleObject], [VisibleObject])
+filterFloorWallExit = go [] [] []
+    where go f w e [] = (f, w, e)
+          go f w e (x:xs) = case oType x of
+                                Floor -> let f' = (x:f) in f' `seq` go f' w e xs
+                                Wall -> let w' = (x:w) in w' `seq` go f w' e xs
+                                Exit -> let e' = (x:e) in e' `seq`go f w e' xs
+                                Player -> go f w e xs
