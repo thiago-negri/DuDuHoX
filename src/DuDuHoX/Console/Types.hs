@@ -2,7 +2,7 @@ module DuDuHoX.Console.Types where
 
 import           Control.Monad.Free
 import           DuDuHoX.Game
-import           DuDuHoX.World.Visible
+import           DuDuHoX.World.Types
 
 data ConsolePosition =
     ConsolePosition {

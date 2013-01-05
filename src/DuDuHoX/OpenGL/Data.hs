@@ -6,7 +6,7 @@ import           Data.IORef
 import qualified Graphics.UI.GLFW      as GLFW
 
 import           DuDuHoX.Game
-import           DuDuHoX.World.Visible
+import           DuDuHoX.World.Types
 
 data DuDuHoXGLContext = DuDuHoXGLContext {
     dirty :: IORef Bool -- ^ Should repaint the screen?

@@ -39,21 +39,21 @@ addWall p = modify $ \builder ->
     }
 
 addPlayer :: WorldPosition -> State WorldBuilder ()
-addPlayer position = modify $ \builder ->
+addPlayer pos = modify $ \builder ->
     builder {
-        builderPlayer = Just $ WorldPlayer position
+        builderPlayer = Just $ WorldPlayer pos
     }
 
 addFloor :: WorldPosition -> State WorldBuilder ()
-addFloor position = modify $ \builder ->
+addFloor pos = modify $ \builder ->
     builder {
-        builderFloors = WorldFloor position : builderFloors builder
+        builderFloors = WorldFloor pos : builderFloors builder
     }
 
 addExit :: WorldPosition -> State WorldBuilder ()
-addExit position = modify $ \builder ->
+addExit pos = modify $ \builder ->
     builder {
-        builderExit = Just $ WorldExit position
+        builderExit = Just $ WorldExit pos
     }
 
 parseWorldInfo :: [String] -> State WorldBuilder ()
@@ -69,12 +69,12 @@ parseWorldLineInfo (y, worldLine) = threadState (indexated worldLine) (parseWorl
 parseWorldCharInfo :: Int -> (Int, Char) -> State WorldBuilder ()
 parseWorldCharInfo y (x, c) =
     case c of
-        '#' -> addWall position
-        '@' -> addPlayer position >> addFloor position
-        '.' -> addFloor position
-        '!' -> addExit position
+        '#' -> addWall pos
+        '@' -> addPlayer pos >> addFloor pos
+        '.' -> addFloor pos
+        '!' -> addExit pos
         _ -> return ()
-    where position = WorldPosition x y
+    where pos = WorldPosition x y
 
 indexated :: [a] -> [(Int, a)]
 indexated = zip [0..]

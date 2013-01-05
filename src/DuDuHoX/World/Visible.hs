@@ -4,18 +4,6 @@ import           DuDuHoX.World.Types
 import           Data.List              ((\\))
 import           DuDuHoX.Util.Bresenham
 
-data VisibleWorld =
-    VisibleWorld {
-        viewer :: VisibleObject,
-        seen :: [VisibleObject],
-        fog :: [VisibleObject],
-        unseen :: [VisibleObject],
-        vWorld :: World
-    }
-
-data VisibleObject = VisibleObject { oType :: WorldObjectType, position :: WorldPosition } deriving Eq
-data WorldObjectType = Wall | Floor | Exit | Player deriving Eq
-
 mkVisWorld :: World -> VisibleWorld
 mkVisWorld w = updateVision
     VisibleWorld {

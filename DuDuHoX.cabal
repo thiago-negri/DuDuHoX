@@ -18,7 +18,6 @@ executable DuDuHoX
                    directory
   ghc-options:     -Wall -threaded -O2
   other-modules:   
-                   DuDuHoX.World,
                    Main,
                    DuDuHoX.Game,
                    DuDuHoX.World.Builder,
@@ -26,7 +25,6 @@ executable DuDuHoX
                    DuDuHoX.Console.Game,
                    DuDuHoX.Console.Interface,
                    DuDuHoX.World.Base,
-                   DuDuHoX.Console,
                    DuDuHoX.Console.Types,
                    DuDuHoX.Console.IORunner,
                    DuDuHoX.World.Types,

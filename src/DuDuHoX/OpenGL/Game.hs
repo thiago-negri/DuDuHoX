@@ -12,7 +12,8 @@ import qualified Graphics.UI.GLFW          as GLFW
 import           DuDuHoX.Game
 import           DuDuHoX.OpenGL.Data
 import           DuDuHoX.OpenGL.Init
-import           DuDuHoX.World
+import           DuDuHoX.World.Types
+import           DuDuHoX.World.Base
 import           DuDuHoX.World.Visible
 
 game :: World -> IO ()
@@ -29,7 +30,9 @@ loop (c@DuDuHoXGLContext{..}) = do
     d <- readIORef dirty
     when d $ do
         world' <- readIORef world
-        drawWorld world'
+        let world'' = limitViewer (WorldPosition 10 5) world'  
+            world''' = applyDeltaW (WorldPosition 3 2) world''
+        drawWorld world'''
         when (won (vWorld world')) drawWin
         GLFW.swapBuffers
         writeIORef dirty False

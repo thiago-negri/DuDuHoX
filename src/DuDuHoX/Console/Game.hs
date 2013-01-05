@@ -3,7 +3,8 @@ module DuDuHoX.Console.Game where
 import           DuDuHoX.Console.Interface
 import           DuDuHoX.Console.Types
 import           DuDuHoX.Game
-import           DuDuHoX.World
+import           DuDuHoX.World.Types
+import           DuDuHoX.World.Base
 import           DuDuHoX.World.Visible
 
 game :: World -> DuDuHoXConsoleM ()

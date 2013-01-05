@@ -15,23 +15,11 @@ movePlayer world move = result
         player = worldPlayer world
         newWorld = world{worldPlayer=player{playerPosition=newPosition}}
 
-instance WorldObject WorldWall where
-    worldPosition = wallPosition
-
-instance WorldObject WorldExit where
-    worldPosition = exitPosition
-
-instance WorldObject WorldPlayer where
-    worldPosition = playerPosition
-
-instance WorldObject WorldFloor where
-    worldPosition = floorPosition
-
 isWalkableAt :: World -> WorldPosition -> Bool
-world `isWalkableAt` position = exitPosition (worldExit world) == position || world `hasFloorAt` position
+world `isWalkableAt` pos = exitPosition (worldExit world) == pos || world `hasFloorAt` pos
 
 hasFloorAt :: World -> WorldPosition -> Bool
-world `hasFloorAt` position = any ((position ==) . floorPosition) floors
+world `hasFloorAt` pos = any ((pos ==) . floorPosition) floors
     where floors = worldFloors world
 
 delta :: MoveDirection -> WorldPosition

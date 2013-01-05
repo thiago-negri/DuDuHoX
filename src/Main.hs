@@ -2,10 +2,13 @@ module Main where
 
 import qualified Data.ByteString          as BS
 import qualified Data.ByteString.Char8    as BS8
-import qualified DuDuHoX.Console          as C
-import           DuDuHoX.Console.IORunner (runConsole)
+
+import qualified DuDuHoX.Console.Game     as C
 import qualified DuDuHoX.OpenGL.Game      as OGL
-import           DuDuHoX.World            (World, parseWorld)
+
+import           DuDuHoX.Console.IORunner (runConsole)
+import           DuDuHoX.World.Types      (World)
+import           DuDuHoX.World.Builder    (parseWorld)
 import           System.Directory         (doesFileExist)
 import           System.IO                (hFlush, stdout)
 

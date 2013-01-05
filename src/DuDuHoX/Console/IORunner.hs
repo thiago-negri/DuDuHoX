@@ -9,7 +9,6 @@ import           Control.Monad.Free    (Free (..))
 import           DuDuHoX.Console.Types
 import           DuDuHoX.Game
 import           DuDuHoX.World.Types
-import           DuDuHoX.World.Visible
 import           System.Console.ANSI
 import           System.IO
 
