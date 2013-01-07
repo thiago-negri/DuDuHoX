@@ -23,12 +23,13 @@ Making a maze game in order to learn Haskell.
 - Draw walkable floor: Walkable floor ('.') is not the same as empty space (' '); Empty space do not block vision but can't be moved onto.
 - User interface (world display area, controls, message area): ASCII art.
 - World scrolling: Player is always at the center of the screen.
-- Console user interface: For old school lovers (buffer problem on Windows).
-- OpenGL user interface: Not super sexy, but has nicer graphics than the Console version (no buffer problems).
+- Console user interface: For old school lovers, has a buffer problem on Windows, need to press `enter` after every move.
+- OpenGL user interface: Not super sexy, but has nicer graphics than the Console version and no buffer problems on Windows.
 
 ### Things to do ###
 - Improve user interfaces code: Make a core game module that handles the state of the game. The user interfaces modules should only provide "receive input" and "render" functions.
-- Improve OpenGL user interface: Add a background with keys and message area, like the Console version.
+- Improve OpenGL user interface code: make a monad, just like DuDuHoXConsoleM, but for the OpenGL version that handles, for example, textures.
+- Add animations on OpenGL interface.
 - Add support for joystick.
 - Graphical world editing: Create new worlds inside the game.
 - Save game: Save your progress and resume later.

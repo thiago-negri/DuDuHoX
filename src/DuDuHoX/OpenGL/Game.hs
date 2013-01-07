@@ -12,9 +12,10 @@ import qualified Graphics.UI.GLFW          as GLFW
 import           DuDuHoX.Game
 import           DuDuHoX.OpenGL.Data
 import           DuDuHoX.OpenGL.Init
-import           DuDuHoX.World.Types
 import           DuDuHoX.World.Base
+import           DuDuHoX.World.Types
 import           DuDuHoX.World.Visible
+import           Graphics.Rendering.OpenGL (($=))
 
 game :: World -> IO ()
 game w = do
@@ -29,7 +30,7 @@ loop (c@DuDuHoXGLContext{..}) = do
     -- redraw screen if dirty
     d <- readIORef dirty
     when d $ do
-        GL.clear [GL.ColorBuffer] 
+        clearScreen c
         world' <- readIORef world
         let world'' = limitViewer (WorldPosition 19 5) world'
         drawWorld world''
@@ -46,7 +47,7 @@ loop (c@DuDuHoXGLContext{..}) = do
         Just (Movement m) -> do
             world' <- readIORef world
             unless (won (vWorld world')) $
-                let newWorld = updateWorld world' (movePlayer (vWorld world') m) 
+                let newWorld = updateWorld world' (movePlayer (vWorld world') m)
                 in do writeIORef world newWorld
                       writeIORef dirty True
         _ -> return ()
@@ -54,6 +55,22 @@ loop (c@DuDuHoXGLContext{..}) = do
     -- check if we need to quit the loop
     q <- readIORef quit
     unless q $ loop c
+
+clearScreen :: DuDuHoXGLContext -> IO ()
+clearScreen (DuDuHoXGLContext{..}) = do
+    GL.clear [GL.ColorBuffer]
+    GL.color $ color3 1 1 1
+    Just tex <- readIORef backgroundTex
+    with2DTexture tex $
+        GL.renderPrimitive GL.TriangleStrip $ do
+            GL.texCoord $ GL.TexCoord2 1 (1::GL.GLfloat)
+            GL.vertex $ vertex3 800 0 0
+            GL.texCoord $ GL.TexCoord2 1 (0::GL.GLfloat)
+            GL.vertex $ vertex3 800 450 0
+            GL.texCoord $ GL.TexCoord2 0 (1::GL.GLfloat)
+            GL.vertex $ vertex3 0 0 0
+            GL.texCoord $ GL.TexCoord2 0 (0::GL.GLfloat)
+            GL.vertex $ vertex3 0 450 0
 
 keyboardCallback :: MVar GameInput -> GLFW.KeyCallback
 keyboardCallback userInput k e =
@@ -69,7 +86,7 @@ keyboardCallback userInput k e =
 drawWin :: IO ()
 drawWin =
     GL.preservingMatrix $ do
-        GL.translate $ vector3 10 45 0
+        GL.translate $ vector3 10 30 0
         GL.rotate 180 $ vector3 1 0 0
         GLFW.renderString GLFW.Fixed8x16 "You won! Press 'Q' to quit."
 
@@ -77,19 +94,19 @@ drawWorld :: VisibleWorld -> IO ()
 drawWorld w =
     GL.preservingMatrix $ do
         GL.translate $ vector3 10 50 0
-        
+
         -- VISIBLE
         let (vFloors, vWalls, vExits) = filterFloorWallExit $ seen w
         mapM_ (drawVisibleFloor . position) vFloors
         mapM_ (drawVisibleWall . position) vWalls
         mapM_ (drawVisibleExit . position) vExits
-    
+
         -- FOG
         let (fFloors, fWalls, fExits) = filterFloorWallExit $ fog w
         mapM_ (drawFogFloor . position) fFloors
         mapM_ (drawFogWall . position) fWalls
         mapM_ (drawFogExit . position) fExits
-    
+
         -- player
         drawPlayer (position $ viewer w)
 
@@ -256,3 +273,10 @@ color3 = GL.Color3
 
 vector3 :: GL.GLfloat -> GL.GLfloat -> GL.GLfloat -> GL.Vector3 GL.GLfloat
 vector3 = GL.Vector3
+
+with2DTexture :: GL.TextureObject -> IO a -> IO a
+with2DTexture tex a = do
+    GL.textureBinding GL.Texture2D $= Just tex
+    r <- a
+    GL.textureBinding GL.Texture2D $= Nothing
+    return r

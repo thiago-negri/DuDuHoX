@@ -15,13 +15,21 @@ initGL (DuDuHoXGLContext{..}) = do
     _ <- GLFW.initialize
 
     -- Open window
-    _ <- GLFW.openWindow (GL.Size 800 300) [GLFW.DisplayAlphaBits 8] GLFW.Window
+    _ <- GLFW.openWindow (GL.Size 800 450) [GLFW.DisplayAlphaBits 8] GLFW.Window
     GLFW.windowTitle $= "DuDuHoX"
     GL.shadeModel    $= GL.Smooth
-
+    
+    GL.texture GL.Texture2D $= GL.Enabled
+    (texName:_) <- GL.genObjectNames 1
+    GL.textureBinding GL.Texture2D $= Just texName
+    GL.textureFilter GL.Texture2D $= ((GL.Linear', Nothing), GL.Linear')
+    GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.ClampToEdge)
+    GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.ClampToEdge)
+    _ <- GLFW.loadTexture2D "background.tga" [GLFW.BuildMipMaps]
+    writeIORef backgroundTex $ Just texName
+    
     -- Enable antialiasing
     GL.lineSmooth $= GL.Enabled
-    GL.polygonSmooth $= GL.Enabled
     GL.blend      $= GL.Enabled
     GL.blendFunc  $= (GL.SrcAlpha, GL.OneMinusSrcAlpha)
     GL.lineWidth  $= 1.5
