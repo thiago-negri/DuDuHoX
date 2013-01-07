@@ -29,10 +29,10 @@ loop (c@DuDuHoXGLContext{..}) = do
     -- redraw screen if dirty
     d <- readIORef dirty
     when d $ do
+        GL.clear [GL.ColorBuffer] 
         world' <- readIORef world
-        let world'' = limitViewer (WorldPosition 10 5) world'  
-            world''' = applyDeltaW (WorldPosition 3 2) world''
-        drawWorld world'''
+        let world'' = limitViewer (WorldPosition 19 5) world'
+        drawWorld world''
         when (won (vWorld world')) drawWin
         GLFW.swapBuffers
         writeIORef dirty False
@@ -74,23 +74,24 @@ drawWin =
         GLFW.renderString GLFW.Fixed8x16 "You won! Press 'Q' to quit."
 
 drawWorld :: VisibleWorld -> IO ()
-drawWorld w = do
-    GL.clear [GL.ColorBuffer]
-
-    -- VISIBLE
-    let (vFloors, vWalls, vExits) = filterFloorWallExit $ seen w
-    mapM_ (drawVisibleFloor . position) vFloors
-    mapM_ (drawVisibleWall . position) vWalls
-    mapM_ (drawVisibleExit . position) vExits
-
-    -- FOG
-    let (fFloors, fWalls, fExits) = filterFloorWallExit $ fog w
-    mapM_ (drawFogFloor . position) fFloors
-    mapM_ (drawFogWall . position) fWalls
-    mapM_ (drawFogExit . position) fExits
-
-    -- player
-    drawPlayer (position $ viewer w)
+drawWorld w =
+    GL.preservingMatrix $ do
+        GL.translate $ vector3 10 50 0
+        
+        -- VISIBLE
+        let (vFloors, vWalls, vExits) = filterFloorWallExit $ seen w
+        mapM_ (drawVisibleFloor . position) vFloors
+        mapM_ (drawVisibleWall . position) vWalls
+        mapM_ (drawVisibleExit . position) vExits
+    
+        -- FOG
+        let (fFloors, fWalls, fExits) = filterFloorWallExit $ fog w
+        mapM_ (drawFogFloor . position) fFloors
+        mapM_ (drawFogWall . position) fWalls
+        mapM_ (drawFogExit . position) fExits
+    
+        -- player
+        drawPlayer (position $ viewer w)
 
 drawPlayer :: WorldPosition -> IO ()
 drawPlayer p = do
@@ -245,12 +246,7 @@ drawQuad p =
 mkVector :: WorldPosition -> GL.Vector3 GL.GLfloat
 mkVector p = GL.Vector3 x y 0
     where x = fromIntegral (worldX p) * 20
-          y = 50 + fromIntegral (worldY p) * 20
-
-mkNegVector :: WorldPosition -> GL.Vector3 GL.GLfloat
-mkNegVector p = GL.Vector3 x y 0
-    where x = fromIntegral (worldX p) * (-20)
-          y = (-50) + fromIntegral (worldY p) * (-20)
+          y = fromIntegral (worldY p) * 20
 
 vertex3 :: GL.GLfloat -> GL.GLfloat -> GL.GLfloat -> GL.Vertex3 GL.GLfloat
 vertex3 = GL.Vertex3

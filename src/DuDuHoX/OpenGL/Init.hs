@@ -15,7 +15,7 @@ initGL (DuDuHoXGLContext{..}) = do
     _ <- GLFW.initialize
 
     -- Open window
-    _ <- GLFW.openWindow (GL.Size 600 400) [GLFW.DisplayAlphaBits 8] GLFW.Window
+    _ <- GLFW.openWindow (GL.Size 800 300) [GLFW.DisplayAlphaBits 8] GLFW.Window
     GLFW.windowTitle $= "DuDuHoX"
     GL.shadeModel    $= GL.Smooth
 
