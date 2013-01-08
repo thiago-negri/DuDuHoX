@@ -30,5 +30,6 @@ executable DuDuHoX
                    DuDuHoX.Console.IORunner,
                    DuDuHoX.World.Types,
                    DuDuHoX.World.Visible,
-                   DuDuHoX.OpenGL.Loop
+                   DuDuHoX.OpenGL.Loop,
+                   DuDuHoX.OpenGL.Animation
 

@@ -19,9 +19,7 @@ import           DuDuHoX.World.Visible
 
 game :: World -> IO ()
 game w = do
-    w' <- newIORef (mkVisWorld w)
-    context <- mkContext w'
-    initGL context
+    context <- initGL w
     loop context
     releaseGL
 

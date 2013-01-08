@@ -9,9 +9,12 @@ import qualified Graphics.Rendering.OpenGL as GL
 import qualified Graphics.UI.GLFW          as GLFW
 
 import           DuDuHoX.OpenGL.Data
+import           DuDuHoX.OpenGL.Animation
+import           DuDuHoX.World.Types
+import           DuDuHoX.World.Visible
 
-initGL :: DuDuHoXGLContext -> IO ()
-initGL (DuDuHoXGLContext{..}) = do
+initGL :: World -> IO DuDuHoXGLContext
+initGL w = do
     _ <- GLFW.initialize
 
     -- Open window
@@ -21,9 +24,15 @@ initGL (DuDuHoXGLContext{..}) = do
     GL.shadeModel    $= GL.Smooth
     
     -- Load textures
-    tex <- loadTextures
-    writeIORef textures $ Just tex
-        
+    textures <- loadTextures >>= newIORef
+    player <- loadPlayer >>= newIORef
+    
+    -- Build visible world
+    w' <- newIORef $ mkVisWorld w
+    
+    -- Make context
+    c <- mkContext w' player textures
+            
     -- Enable transparency
     GL.blend      $= GL.Enabled
     GL.blendFunc  $= (GL.SrcAlpha, GL.OneMinusSrcAlpha)
@@ -41,10 +50,12 @@ initGL (DuDuHoXGLContext{..}) = do
         GL.ortho2D 0 (realToFrac w) (realToFrac h) 0
 
     -- When the window needs a refresh, set the context dirty
-    GLFW.windowRefreshCallback $= writeIORef dirty True
+    GLFW.windowRefreshCallback $= writeIORef (dirty c) True
 
     -- Terminate the program if the window is closed
-    GLFW.windowCloseCallback $= (putStrLn "closecall" >> writeIORef quit True >> return True)
+    GLFW.windowCloseCallback $= (writeIORef (quit c) True >> return True)
+    
+    return c
 
 loadTextures :: IO DuDuHoXGLTextures
 loadTextures = do
@@ -55,23 +66,32 @@ loadTextures = do
     GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.ClampToEdge)
     _ <- GLFW.loadTexture2D "data/texture/background.tga" [GLFW.BuildMipMaps]
 
+    return DuDuHoXGLTextures {
+        backgroundTex = bTexName
+    }
+
+loadPlayer :: IO GLPlayer
+loadPlayer = do
     (pTex1Name:pTex2Name:_) <- GL.genObjectNames 2
+    
     GL.textureBinding GL.Texture2D $= Just pTex1Name
     GL.textureFilter GL.Texture2D $= ((GL.Linear', Nothing), GL.Linear')
     GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.ClampToEdge)
     GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.ClampToEdge)
     _ <- GLFW.loadTexture2D "data/texture/player/player1.tga" [GLFW.BuildMipMaps]
+    
     GL.textureBinding GL.Texture2D $= Just pTex2Name
     GL.textureFilter GL.Texture2D $= ((GL.Linear', Nothing), GL.Linear')
     GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.ClampToEdge)
     GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.ClampToEdge)
     _ <- GLFW.loadTexture2D "data/texture/player/player2.tga" [GLFW.BuildMipMaps]
     
-    let pTex = pTex1Name:pTex2Name:pTex
-    return DuDuHoXGLTextures {
-        backgroundTex = bTexName,
-        playerTex = pTex
-    }
+    let sprite1 = (pTex1Name, (20, 20))
+        sprite2 = (pTex2Name, (20, 20))
+        animation = createAnimation [(sprite1, 0.3), (sprite2, 0.3)]
+    
+    return $ GLPlayer (0, 0) animation
+    
 
 releaseGL :: IO ()
 releaseGL = do

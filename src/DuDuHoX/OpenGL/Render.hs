@@ -4,13 +4,12 @@ module DuDuHoX.OpenGL.Render where
 
 import           Control.Monad
 import           Data.IORef
-import           Data.Maybe
 
 import qualified Graphics.Rendering.OpenGL as GL
 import qualified Graphics.UI.GLFW          as GLFW
 
 import           DuDuHoX.OpenGL.Data
-import           DuDuHoX.World.Base
+import           DuDuHoX.OpenGL.Animation
 import           DuDuHoX.World.Types
 import           DuDuHoX.World.Visible
 import           Graphics.Rendering.OpenGL (($=), get)
@@ -43,7 +42,7 @@ drawWorld (c@DuDuHoXGLContext{..}) w = do
         GL.translate $ mkDeltaVector (delta p)
         drawPlayer c (position $ viewer w)
         
-    tex <- liftM (backgroundTex . fromJust) $ readIORef textures
+    tex <- liftM backgroundTex $ readIORef textures
     with2DTexture tex $
         GL.renderPrimitive GL.TriangleStrip $ do
             trTexCoord; vertex 800 0 0
@@ -62,48 +61,14 @@ drawPlayer :: DuDuHoXGLContext -> WorldPosition -> IO ()
 drawPlayer (DuDuHoXGLContext{..}) p = do
     GL.color $ color3 1 1 1
     pl <- readIORef player
-    let tO = texOff pl
-    textures' <- liftM fromJust $ readIORef textures
-    let (tex:next) = playerTex textures'
-    when (tO > 1) $ do
-        writeIORef textures . Just $ textures' { playerTex = next }
-        writeIORef player $ pl { texOff = 0 }
-
+    let (tex, (w', h')) = currentSprite $ animation pl
+        (w, h) = (fromIntegral w', fromIntegral h')
     with2DTexture tex . drawAt p $
         GL.renderPrimitive GL.TriangleStrip $ do
-            trTexCoord; vertex 20 0 0
-            brTexCoord; vertex 20 20 0
+            trTexCoord; vertex w 0 0
+            brTexCoord; vertex w h 0
             tlTexCoord; vertex 0 0 0
-            blTexCoord; vertex 0 20 0
-
-{-
-    GL.color $ color3 0.9 0.9 0.9
-    drawAt p $ do
-        -- head
-        GL.renderPrimitive GL.Quads $ do
-            vertex 7 7 0
-            vertex 7 2 0
-            vertex 13 2 0
-            vertex 13 7 0
-
-        -- body
-        GL.renderPrimitive GL.Lines $ do
-            vertex 10 7 0
-            vertex 10 13 0
-
-        -- arms
-        GL.renderPrimitive GL.Lines $ do
-            vertex 7 9 0
-            vertex 13 9 0
-
-        -- legs
-        GL.renderPrimitive GL.Lines $ do
-            vertex 10 13 0
-            vertex 7 18 0
-
-            vertex 10 13 0
-            vertex 13 18 0
--}
+            blTexCoord; vertex 0 h 0
 
 drawVisibleFloor :: WorldPosition -> IO ()
 drawVisibleFloor p = drawFloor p True
@@ -271,7 +236,6 @@ advanceFrame :: DuDuHoXGLContext -> IO ()
 advanceFrame (DuDuHoXGLContext{..}) = do
         t <- get GLFW.time
         let mov = realToFrac $ 60 * t
-        let texAdv = 6 * t
         GLFW.time $= 0
         
         p <- readIORef player
@@ -287,11 +251,11 @@ advanceFrame (DuDuHoXGLContext{..}) = do
     
         if a >= 20 || a <= -20 || b >= 20 || b <= -20 || (a == 0 && b == 0)
             then do
-                writeIORef player $ p { delta = (0, 0), texOff = (texOff p) + texAdv }
+                writeIORef player $ p { delta = (0, 0), animation = animate (animation p) t }
                 writeIORef dirty True
                 writeIORef state Accept
             else do
-                writeIORef player $ p { delta = (a', b'), texOff = (texOff p) + texAdv }
+                writeIORef player $ p { delta = (a', b'), animation = animate (animation p) t }
                 writeIORef dirty True
 
 
