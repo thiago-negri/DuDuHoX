@@ -55,7 +55,7 @@ drawWin =
     GL.preservingMatrix $ do
         GL.translate $ vector3 10 30 0
         GL.rotate 180 $ vector3 1 0 0
-        --GLFW.renderString GLFW.Fixed8x16 "You won! Press 'Q' to quit."
+        GLFW.renderString GLFW.Fixed8x16 "You won! Press 'Q' to quit."
 
 drawPlayer :: DuDuHoXGLContext -> WorldPosition -> IO ()
 drawPlayer (DuDuHoXGLContext{..}) p = do
