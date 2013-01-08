@@ -16,7 +16,8 @@ executable DuDuHoX
                    GLFW,
                    OpenGL,
                    directory
-  ghc-options:     -Wall -threaded -O2
+  ghc-options:     -Wall -threaded -O2 
+-- -optl-mwindows
   other-modules:   
                    Main,
                    DuDuHoX.Game,

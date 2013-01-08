@@ -6,9 +6,10 @@ import qualified Data.ByteString.Char8    as BS8
 import qualified DuDuHoX.Console.Game     as C
 import qualified DuDuHoX.OpenGL.Loop      as OGL
 
+import           Control.Monad
 import           DuDuHoX.Console.IORunner (runConsole)
-import           DuDuHoX.World.Types      (World)
 import           DuDuHoX.World.Builder    (parseWorld)
+import           DuDuHoX.World.Types      (World)
 import           System.Directory         (doesFileExist)
 import           System.IO                (hFlush, stdout)
 
@@ -37,9 +38,9 @@ getUserInterface = do
 
 getWorld :: IO World
 getWorld = do
-    putStr "Map name (maze.ddh | easyWorld.ddh): "
+    putStr "Map name (maze | easyWorld): "
     hFlush stdout
-    fileName <- getLine
+    fileName <- liftM (("data/maps/" ++) . (++ ".ddh")) getLine
     fileExists <- doesFileExist fileName
     if fileExists
         then do
@@ -53,4 +54,3 @@ getWorld = do
         else do
             putStrLn "Map not found"
             getWorld
-

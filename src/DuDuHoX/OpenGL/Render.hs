@@ -4,6 +4,7 @@ module DuDuHoX.OpenGL.Render where
 
 import           Control.Monad
 import           Data.IORef
+import           Data.Maybe
 
 import qualified Graphics.Rendering.OpenGL as GL
 import qualified Graphics.UI.GLFW          as GLFW
@@ -11,13 +12,13 @@ import qualified Graphics.UI.GLFW          as GLFW
 import           DuDuHoX.OpenGL.Data
 import           DuDuHoX.World.Types
 import           DuDuHoX.World.Visible
-import           Graphics.Rendering.OpenGL (($=))
+import           Graphics.Rendering.OpenGL (($=), get)
 
 clearScreen :: DuDuHoXGLContext -> IO ()
 clearScreen (DuDuHoXGLContext{..}) = do
     GL.clear [GL.ColorBuffer]
     GL.color $ color3 1 1 1
-    Just tex <- readIORef backgroundTex
+    tex <- liftM (backgroundTex . fromJust) $ readIORef textures
     with2DTexture tex $
         GL.renderPrimitive GL.TriangleStrip $ do
             trTexCoord; vertex 800 0 0
@@ -26,10 +27,12 @@ clearScreen (DuDuHoXGLContext{..}) = do
             blTexCoord; vertex 0 450 0
 
 drawWorld :: DuDuHoXGLContext -> VisibleWorld -> IO ()
-drawWorld (c@DuDuHoXGLContext{..}) w =
+drawWorld (c@DuDuHoXGLContext{..}) w = do
+    p <- readIORef player
     GL.preservingMatrix $ do
+        GL.translate $ mkNegDeltaVector (delta p)
         GL.translate $ vector3 10 50 0
-        
+
         -- VISIBLE
         let (vFloors, vWalls, vExits) = filterFloorWallExit $ seen w
         mapM_ (drawVisibleFloor . position) vFloors
@@ -43,6 +46,7 @@ drawWorld (c@DuDuHoXGLContext{..}) w =
         mapM_ (drawFogExit . position) fExits
 
         -- player
+        GL.translate $ mkDeltaVector (delta p)
         drawPlayer c (position $ viewer w)
 
 drawWin :: IO ()
@@ -53,16 +57,16 @@ drawWin =
         GLFW.renderString GLFW.Fixed8x16 "You won! Press 'Q' to quit."
 
 drawPlayer :: DuDuHoXGLContext -> WorldPosition -> IO ()
-drawPlayer (c@DuDuHoXGLContext{..}) p = do
+drawPlayer (DuDuHoXGLContext{..}) p = do
     GL.color $ color3 1 1 1
-    Just tex <- readIORef playerTex
+    tex <- liftM (playerTex . fromJust) $ readIORef textures
     with2DTexture tex . drawAt p $
         GL.renderPrimitive GL.TriangleStrip $ do
             trTexCoord; vertex 20 0 0
             brTexCoord; vertex 20 20 0
             tlTexCoord; vertex 0 0 0
             blTexCoord; vertex 0 20 0
-            
+
 {-
     GL.color $ color3 0.9 0.9 0.9
     drawAt p $ do
@@ -251,3 +255,54 @@ with2DTexture tex a = do
     r <- a
     GL.textureBinding GL.Texture2D $= Nothing
     return r
+
+advanceFrame :: DuDuHoXGLContext -> IO ()
+advanceFrame (DuDuHoXGLContext{..}) = do
+        t <- get GLFW.time
+        let mov = realToFrac $ 60 * t
+        GLFW.time $= 0
+        p <- readIORef player
+        let (a, b) = delta p
+    
+            a' | a > 0     = a + mov
+               | a < 0     = a - mov
+               | otherwise = 0
+    
+            b' | b > 0     = b + mov
+               | b < 0     = b - mov
+               | otherwise = 0
+    
+        if a >= 20 || a <= -20 || b >= 20 || b <= -20 || (a == 0 && b == 0)
+            then do
+                writeIORef player $ GLPlayer (0, 0)
+                writeIORef dirty True
+                writeIORef state Accept
+            else do
+                writeIORef player $ GLPlayer (a', b')
+                writeIORef dirty True
+
+
+mkNegDeltaVector :: (GL.GLfloat, GL.GLfloat) -> GL.Vector3 GL.GLfloat
+mkNegDeltaVector (a, b) = vector3 (-a') (-b') 0
+    where
+        a' = da + a
+        b' = db + b
+        
+        da | a > 0     = -20
+           | a < 0     = 20
+           | otherwise = 0
+           
+        db | b > 0     = -20
+           | b < 0     = 20
+           | otherwise = 0
+
+mkDeltaVector :: (GL.GLfloat, GL.GLfloat) -> GL.Vector3 GL.GLfloat
+mkDeltaVector (a, b) = vector3 (da + a) (db + b) 0
+    where
+        da | a > 0     = -20
+           | a < 0     = 20
+           | otherwise = 0
+           
+        db | b > 0     = -20
+           | b < 0     = 20
+           | otherwise = 0

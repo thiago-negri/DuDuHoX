@@ -16,28 +16,14 @@ initGL (DuDuHoXGLContext{..}) = do
 
     -- Open window
     GLFW.openWindowHint GLFW.FSAASamples 6 -- Anti-aliasing
-    _ <- GLFW.openWindow (GL.Size 800 450) [GLFW.DisplayAlphaBits 8] GLFW.Window
+    _ <- GLFW.openWindow (GL.Size 800 600) [GLFW.DisplayAlphaBits 8] GLFW.Window
     GLFW.windowTitle $= "DuDuHoX"
     GL.shadeModel    $= GL.Smooth
     
     -- Load textures
-    GL.texture GL.Texture2D $= GL.Enabled
-    (bTexName:_) <- GL.genObjectNames 1
-    GL.textureBinding GL.Texture2D $= Just bTexName
-    GL.textureFilter GL.Texture2D $= ((GL.Linear', Nothing), GL.Linear')
-    GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.ClampToEdge)
-    GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.ClampToEdge)
-    _ <- GLFW.loadTexture2D "background.tga" [GLFW.BuildMipMaps]
-    writeIORef backgroundTex $ Just bTexName
-    
-    (pTexName:_) <- GL.genObjectNames 1
-    GL.textureBinding GL.Texture2D $= Just pTexName
-    GL.textureFilter GL.Texture2D $= ((GL.Linear', Nothing), GL.Linear')
-    GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.ClampToEdge)
-    GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.ClampToEdge)
-    _ <- GLFW.loadTexture2D "player.tga" [GLFW.BuildMipMaps]
-    writeIORef playerTex $ Just pTexName
-    
+    tex <- loadTextures
+    writeIORef textures $ Just tex
+        
     -- Enable transparency
     GL.blend      $= GL.Enabled
     GL.blendFunc  $= (GL.SrcAlpha, GL.OneMinusSrcAlpha)
@@ -54,19 +40,35 @@ initGL (DuDuHoXGLContext{..}) = do
         GL.loadIdentity
         GL.ortho2D 0 (realToFrac w) (realToFrac h) 0
 
-    -- Disable auto polling of events in swapBuffers
-    GLFW.disableSpecial GLFW.AutoPollEvent
-
     -- When the window needs a refresh, set the context dirty
     GLFW.windowRefreshCallback $= writeIORef dirty True
 
     -- Terminate the program if the window is closed
-    GLFW.windowCloseCallback $= (writeIORef quit True >> return True)
+    GLFW.windowCloseCallback $= (putStrLn "closecall" >> writeIORef quit True >> return True)
 
-    -- Bind callback for keyboard
-    GLFW.keyCallback $= keyCallback
+loadTextures :: IO DuDuHoXGLTextures
+loadTextures = do
+    GL.texture GL.Texture2D $= GL.Enabled
+    (bTexName:_) <- GL.genObjectNames 1
+    GL.textureBinding GL.Texture2D $= Just bTexName
+    GL.textureFilter GL.Texture2D $= ((GL.Linear', Nothing), GL.Linear')
+    GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.ClampToEdge)
+    GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.ClampToEdge)
+    _ <- GLFW.loadTexture2D "data/texture/background.tga" [GLFW.BuildMipMaps]
+
+    (pTexName:_) <- GL.genObjectNames 1
+    GL.textureBinding GL.Texture2D $= Just pTexName
+    GL.textureFilter GL.Texture2D $= ((GL.Linear', Nothing), GL.Linear')
+    GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.ClampToEdge)
+    GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.ClampToEdge)
+    _ <- GLFW.loadTexture2D "data/texture/player.tga" [GLFW.BuildMipMaps]
+    
+    return DuDuHoXGLTextures {
+        backgroundTex = bTexName,
+        playerTex = pTexName
+    }
 
 releaseGL :: IO ()
 releaseGL = do
-  GLFW.closeWindow
-  GLFW.terminate
+    GLFW.closeWindow
+    GLFW.terminate
