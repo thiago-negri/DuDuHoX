@@ -8,6 +8,11 @@ import           DuDuHoX.Game
 import           DuDuHoX.OpenGL.Animation
 import           DuDuHoX.World.Types
 
+data FPSCounter = FPSCounter {
+    currentFPS :: Double -- ^ Current FPS counter
+   ,timeSinceLastUpdate :: Double -- ^ Time elapsed since last FPS counter update in seconds 
+}
+
 data GLPlayer = GLPlayer {
     delta :: (GL.GLfloat, GL.GLfloat) -- ^ Player delta
    ,animation :: Animation
@@ -27,6 +32,7 @@ data DuDuHoXGLContext = DuDuHoXGLContext {
    ,textures :: IORef DuDuHoXGLTextures -- ^ Textures used in game
    ,player :: IORef GLPlayer
    ,state :: IORef GLState
+   ,fpsCounter :: IORef FPSCounter
 }
 
 mkContext :: IORef VisibleWorld -> IORef GLPlayer -> IORef DuDuHoXGLTextures -> IO DuDuHoXGLContext
@@ -35,6 +41,7 @@ mkContext world' player' textures' = do
     quit' <- newIORef False
     userInput' <- newIORef Nothing
     state' <- newIORef Accept
+    fpsCounter' <- newIORef $ FPSCounter 0 1
     return DuDuHoXGLContext {
         dirty = dirty',
         userInput = userInput',
@@ -42,5 +49,6 @@ mkContext world' player' textures' = do
         world = world',
         textures = textures',
         player = player',
-        state = state'
+        state = state',
+        fpsCounter = fpsCounter'
     }

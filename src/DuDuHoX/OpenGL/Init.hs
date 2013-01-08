@@ -43,17 +43,20 @@ initGL w = do
     -- Set 2D orthogonal view inside windowSizeCallback because
     -- any change to the Window size should result in different
     -- OpenGL Viewport.
-    GLFW.windowSizeCallback $= \ size@(GL.Size w h) -> do
+    GLFW.windowSizeCallback $= \ size -> do
         GL.viewport   $= (GL.Position 0 0, size)
         GL.matrixMode $= GL.Projection
         GL.loadIdentity
-        GL.ortho2D 0 (realToFrac w) (realToFrac h) 0
+        GL.ortho2D 0 800 600 0
 
     -- When the window needs a refresh, set the context dirty
     GLFW.windowRefreshCallback $= writeIORef (dirty c) True
 
     -- Terminate the program if the window is closed
     GLFW.windowCloseCallback $= (writeIORef (quit c) True >> return True)
+    
+    -- Disable vertical sync
+    -- GLFW.swapInterval $= 0
     
     return c
 

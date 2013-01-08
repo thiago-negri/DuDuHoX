@@ -35,6 +35,8 @@ loop (c@DuDuHoXGLContext{..}) = do
         let world'' = limitViewer (WorldPosition 19 5) world'
         drawWorld c world''
         when (won (vWorld world') && state' == Accept) drawWin
+        fpsCounter' <- readIORef fpsCounter
+        drawFPS (currentFPS fpsCounter')
         GLFW.swapBuffers
         writeIORef dirty False
 
@@ -60,11 +62,17 @@ acceptInput (DuDuHoXGLContext{..}) = do
     s <- GLFW.getKey 'S'
     d <- GLFW.getKey 'D'
     
-    when (w == GLFW.Press) $ writeIORef userInput . Just $ Movement MoveUp
-    when (a == GLFW.Press) $ writeIORef userInput . Just $ Movement MoveLeft
-    when (s == GLFW.Press) $ writeIORef userInput . Just $ Movement MoveDown
-    when (d == GLFW.Press) $ writeIORef userInput . Just $ Movement MoveRight
-    when (q == GLFW.Press) $ writeIORef userInput . Just $ Quit
+    up <- GLFW.getKey GLFW.UP
+    down <- GLFW.getKey GLFW.DOWN
+    left <- GLFW.getKey GLFW.LEFT
+    right <- GLFW.getKey GLFW.RIGHT
+    esc <- GLFW.getKey GLFW.ESC
+    
+    when (w == GLFW.Press || up == GLFW.Press)    $ writeIORef userInput . Just $ Movement MoveUp
+    when (a == GLFW.Press || left == GLFW.Press)  $ writeIORef userInput . Just $ Movement MoveLeft
+    when (s == GLFW.Press || down == GLFW.Press)  $ writeIORef userInput . Just $ Movement MoveDown
+    when (d == GLFW.Press || right == GLFW.Press) $ writeIORef userInput . Just $ Movement MoveRight
+    when (q == GLFW.Press || esc == GLFW.Press)   $ writeIORef userInput . Just $ Quit
 
     -- check for user input
     input <- readIORef userInput

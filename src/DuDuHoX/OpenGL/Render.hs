@@ -46,9 +46,9 @@ drawWorld (c@DuDuHoXGLContext{..}) w = do
     with2DTexture tex $
         GL.renderPrimitive GL.TriangleStrip $ do
             trTexCoord; vertex 800 0 0
-            brTexCoord; vertex 800 450 0
+            brTexCoord; vertex 800 600 0
             tlTexCoord; vertex 0 0 0
-            blTexCoord; vertex 0 450 0
+            blTexCoord; vertex 0 600 0
 
 drawWin :: IO ()
 drawWin =
@@ -56,6 +56,13 @@ drawWin =
         GL.translate $ vector3 10 30 0
         GL.rotate 180 $ vector3 1 0 0
         GLFW.renderString GLFW.Fixed8x16 "You won! Press 'Q' to quit."
+
+drawFPS :: Double -> IO ()
+drawFPS fps =
+    GL.preservingMatrix $ do
+        GL.translate $ vector3 400 30 0
+        GL.rotate 180 $ vector3 1 0 0
+        GLFW.renderString GLFW.Fixed8x16 $ "FPS: " ++ show fps
 
 drawPlayer :: DuDuHoXGLContext -> WorldPosition -> IO ()
 drawPlayer (DuDuHoXGLContext{..}) p = do
@@ -233,31 +240,35 @@ with2DTexture tex a = do
     return r
 
 advanceFrame :: DuDuHoXGLContext -> IO ()
-advanceFrame (DuDuHoXGLContext{..}) = do
-        t <- get GLFW.time
-        let mov = realToFrac $ 60 * t
-        GLFW.time $= 0
-        
-        p <- readIORef player
-        let (a, b) = delta p
+advanceFrame (c@DuDuHoXGLContext{..}) = do
+    t <- get GLFW.time
+    GLFW.time $= 0
     
-            a' | a > 0     = a + mov
-               | a < 0     = a - mov
-               | otherwise = 0
-    
-            b' | b > 0     = b + mov
-               | b < 0     = b - mov
-               | otherwise = 0
-    
-        if a >= 20 || a <= -20 || b >= 20 || b <= -20 || (a == 0 && b == 0)
-            then do
-                writeIORef player $ p { delta = (0, 0), animation = animate (animation p) t }
-                writeIORef dirty True
-                writeIORef state Accept
-            else do
-                writeIORef player $ p { delta = (a', b'), animation = animate (animation p) t }
-                writeIORef dirty True
+    updateFPS c t
+    updatePlayer c t
 
+updatePlayer :: DuDuHoXGLContext -> Time -> IO ()
+updatePlayer (DuDuHoXGLContext{..}) t = do
+    let mov = realToFrac $ 60 * t
+    p <- readIORef player
+    let (a, b) = delta p
+
+        a' | a > 0     = a + mov
+           | a < 0     = a - mov
+           | otherwise = 0
+
+        b' | b > 0     = b + mov
+           | b < 0     = b - mov
+           | otherwise = 0
+
+    if a >= 20 || a <= -20 || b >= 20 || b <= -20 || (a == 0 && b == 0)
+        then do
+            writeIORef player $ p { delta = (0, 0), animation = animate (animation p) t }
+            writeIORef dirty True
+            writeIORef state Accept
+        else do
+            writeIORef player $ p { delta = (a', b'), animation = animate (animation p) t }
+            writeIORef dirty True
 
 mkNegDeltaVector :: (GL.GLfloat, GL.GLfloat) -> GL.Vector3 GL.GLfloat
 mkNegDeltaVector (a, b) = vector3 (-a') (-b') 0
@@ -283,3 +294,15 @@ mkDeltaVector (a, b) = vector3 (da + a) (db + b) 0
         db | b > 0     = -20
            | b < 0     = 20
            | otherwise = 0
+
+updateFPS :: DuDuHoXGLContext -> Double -> IO ()
+updateFPS (DuDuHoXGLContext{..}) t = do
+    fpsCounter' <- readIORef fpsCounter
+    let tslu = timeSinceLastUpdate fpsCounter'
+    
+    when (tslu >= 1) $ 
+        let fps = 1 / t 
+        in writeIORef fpsCounter $ FPSCounter fps 0
+        
+    when (tslu < 1) $ 
+        writeIORef fpsCounter $ fpsCounter' { timeSinceLastUpdate = tslu + t }
