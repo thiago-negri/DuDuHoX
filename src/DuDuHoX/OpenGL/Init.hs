@@ -22,13 +22,21 @@ initGL (DuDuHoXGLContext{..}) = do
     
     -- Load textures
     GL.texture GL.Texture2D $= GL.Enabled
-    (texName:_) <- GL.genObjectNames 1
-    GL.textureBinding GL.Texture2D $= Just texName
+    (bTexName:_) <- GL.genObjectNames 1
+    GL.textureBinding GL.Texture2D $= Just bTexName
     GL.textureFilter GL.Texture2D $= ((GL.Linear', Nothing), GL.Linear')
     GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.ClampToEdge)
     GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.ClampToEdge)
     _ <- GLFW.loadTexture2D "background.tga" [GLFW.BuildMipMaps]
-    writeIORef backgroundTex $ Just texName
+    writeIORef backgroundTex $ Just bTexName
+    
+    (pTexName:_) <- GL.genObjectNames 1
+    GL.textureBinding GL.Texture2D $= Just pTexName
+    GL.textureFilter GL.Texture2D $= ((GL.Linear', Nothing), GL.Linear')
+    GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.ClampToEdge)
+    GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.ClampToEdge)
+    _ <- GLFW.loadTexture2D "player.tga" [GLFW.BuildMipMaps]
+    writeIORef playerTex $ Just pTexName
     
     -- Enable transparency
     GL.blend      $= GL.Enabled

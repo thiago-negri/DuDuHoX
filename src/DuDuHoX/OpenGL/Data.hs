@@ -16,6 +16,7 @@ data DuDuHoXGLContext = DuDuHoXGLContext {
    ,keyCallback :: GLFW.KeyCallback -- ^ Callback used when a key is pressed
    ,world :: IORef VisibleWorld -- ^ The current state of the game
    ,backgroundTex :: IORef (Maybe GL.TextureObject) -- ^ Texture used for background
+   ,playerTex :: IORef (Maybe GL.TextureObject) -- ^ Texture used for player
 }
 
 mkContext :: (MVar GameInput -> GLFW.KeyCallback) -> IORef VisibleWorld -> IO DuDuHoXGLContext
@@ -24,11 +25,13 @@ mkContext keyCallback' world' = do
     quit' <- newIORef False
     userInput' <- newEmptyMVar
     backgroundTex' <- newIORef Nothing
+    playerTex' <- newIORef Nothing
     return DuDuHoXGLContext {
         dirty = dirty',
         userInput = userInput',
         quit = quit',
         keyCallback = keyCallback' userInput',
         world = world',
-        backgroundTex = backgroundTex'
+        backgroundTex = backgroundTex',
+        playerTex = playerTex'
     }
