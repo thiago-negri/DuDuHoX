@@ -15,7 +15,8 @@ executable DuDuHoX
                    free,
                    GLFW,
                    OpenGL,
-                   directory
+                   directory,
+                   ALUT
   ghc-options:     -Wall -threaded -O2 
 -- -optl-mwindows
   other-modules:   

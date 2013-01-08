@@ -16,17 +16,31 @@ import           DuDuHoX.OpenGL.Render
 import           DuDuHoX.World.Base
 import           DuDuHoX.World.Types
 import           DuDuHoX.World.Visible
+import           Sound.ALUT
 
 game :: World -> IO ()
-game w = do
+game w = withProgNameAndArgs runALUTUsingCurrentContext $ \_ _ -> alutGame w
+    
+alutGame :: World -> IO ()
+alutGame w = do
+    (Just device) <- openDevice Nothing
+    (Just context) <- createContext device []
+    currentContext $= Just context
+    buffer1 <- createBuffer $ File "data/sound/mainloop.wav"
+    [source] <- genObjectNames 1
+    loopingMode source $= Looping
+    queueBuffers source [buffer1]
+    play [source]
     context <- initGL w
     loop context
     releaseGL
+    _ <- closeDevice device
+    return ()
 
 loop :: DuDuHoXGLContext -> IO ()
 loop (c@DuDuHoXGLContext{..}) = do
     state' <- readIORef state
-    
+
     -- redraw screen if dirty
     d <- readIORef dirty
     when d $ do
@@ -41,7 +55,7 @@ loop (c@DuDuHoXGLContext{..}) = do
         writeIORef dirty False
 
     advanceFrame c
-    
+
     case state' of
         Accept -> acceptInput c
         _ -> return ()
@@ -53,21 +67,21 @@ loop (c@DuDuHoXGLContext{..}) = do
 acceptInput :: DuDuHoXGLContext -> IO ()
 acceptInput (DuDuHoXGLContext{..}) = do
     GLFW.pollEvents
-    
+
     writeIORef userInput Nothing
-    
+
     q <- GLFW.getKey 'Q'
     w <- GLFW.getKey 'W'
     a <- GLFW.getKey 'A'
     s <- GLFW.getKey 'S'
     d <- GLFW.getKey 'D'
-    
+
     up <- GLFW.getKey GLFW.UP
     down <- GLFW.getKey GLFW.DOWN
     left <- GLFW.getKey GLFW.LEFT
     right <- GLFW.getKey GLFW.RIGHT
     esc <- GLFW.getKey GLFW.ESC
-    
+
     when (w == GLFW.Press || up == GLFW.Press)    $ writeIORef userInput . Just $ Movement MoveUp
     when (a == GLFW.Press || left == GLFW.Press)  $ writeIORef userInput . Just $ Movement MoveLeft
     when (s == GLFW.Press || down == GLFW.Press)  $ writeIORef userInput . Just $ Movement MoveDown
