@@ -25,6 +25,8 @@ Making a maze game in order to learn Haskell.
 - World scrolling: Player is always at the center of the screen.
 - Console user interface: For old school lovers, has a buffer problem on Windows, need to press `enter` after every move.
 - OpenGL user interface: Not super sexy, but has nicer graphics than the Console version, no buffer problems on Windows and a move-transition animation.
+  - Background music: over-bad OpenMPT music made by the greatest composer of all history: myself.
+  - Animation: the player has an animation of two sprites.
 
 ### Things to do ###
 - Improve user interfaces code: Make a core game module that handles the state of the game. The user interfaces modules should only provide "receive input" and "render" functions.
