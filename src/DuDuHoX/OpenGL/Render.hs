@@ -10,6 +10,7 @@ import qualified Graphics.Rendering.OpenGL as GL
 import qualified Graphics.UI.GLFW          as GLFW
 
 import           DuDuHoX.OpenGL.Data
+import           DuDuHoX.World.Base
 import           DuDuHoX.World.Types
 import           DuDuHoX.World.Visible
 import           Graphics.Rendering.OpenGL (($=), get)
@@ -18,13 +19,6 @@ clearScreen :: DuDuHoXGLContext -> IO ()
 clearScreen (DuDuHoXGLContext{..}) = do
     GL.clear [GL.ColorBuffer]
     GL.color $ color3 1 1 1
-    tex <- liftM (backgroundTex . fromJust) $ readIORef textures
-    with2DTexture tex $
-        GL.renderPrimitive GL.TriangleStrip $ do
-            trTexCoord; vertex 800 0 0
-            brTexCoord; vertex 800 450 0
-            tlTexCoord; vertex 0 0 0
-            blTexCoord; vertex 0 450 0
 
 drawWorld :: DuDuHoXGLContext -> VisibleWorld -> IO ()
 drawWorld (c@DuDuHoXGLContext{..}) w = do
@@ -48,18 +42,33 @@ drawWorld (c@DuDuHoXGLContext{..}) w = do
         -- player
         GL.translate $ mkDeltaVector (delta p)
         drawPlayer c (position $ viewer w)
+        
+    tex <- liftM (backgroundTex . fromJust) $ readIORef textures
+    with2DTexture tex $
+        GL.renderPrimitive GL.TriangleStrip $ do
+            trTexCoord; vertex 800 0 0
+            brTexCoord; vertex 800 450 0
+            tlTexCoord; vertex 0 0 0
+            blTexCoord; vertex 0 450 0
 
 drawWin :: IO ()
 drawWin =
     GL.preservingMatrix $ do
         GL.translate $ vector3 10 30 0
         GL.rotate 180 $ vector3 1 0 0
-        GLFW.renderString GLFW.Fixed8x16 "You won! Press 'Q' to quit."
+        --GLFW.renderString GLFW.Fixed8x16 "You won! Press 'Q' to quit."
 
 drawPlayer :: DuDuHoXGLContext -> WorldPosition -> IO ()
 drawPlayer (DuDuHoXGLContext{..}) p = do
     GL.color $ color3 1 1 1
-    tex <- liftM (playerTex . fromJust) $ readIORef textures
+    pl <- readIORef player
+    let tO = texOff pl
+    textures' <- liftM fromJust $ readIORef textures
+    let (tex:next) = playerTex textures'
+    when (tO > 1) $ do
+        writeIORef textures . Just $ textures' { playerTex = next }
+        writeIORef player $ pl { texOff = 0 }
+
     with2DTexture tex . drawAt p $
         GL.renderPrimitive GL.TriangleStrip $ do
             trTexCoord; vertex 20 0 0
@@ -251,16 +260,20 @@ trTexCoord = GL.texCoord $ texCoord2 1 1
 
 with2DTexture :: GL.TextureObject -> IO a -> IO a
 with2DTexture tex a = do
+    GL.texture GL.Texture2D $= GL.Enabled
     GL.textureBinding GL.Texture2D $= Just tex
     r <- a
     GL.textureBinding GL.Texture2D $= Nothing
+    GL.texture GL.Texture2D $= GL.Disabled
     return r
 
 advanceFrame :: DuDuHoXGLContext -> IO ()
 advanceFrame (DuDuHoXGLContext{..}) = do
         t <- get GLFW.time
         let mov = realToFrac $ 60 * t
+        let texAdv = 6 * t
         GLFW.time $= 0
+        
         p <- readIORef player
         let (a, b) = delta p
     
@@ -274,11 +287,11 @@ advanceFrame (DuDuHoXGLContext{..}) = do
     
         if a >= 20 || a <= -20 || b >= 20 || b <= -20 || (a == 0 && b == 0)
             then do
-                writeIORef player $ GLPlayer (0, 0)
+                writeIORef player $ p { delta = (0, 0), texOff = (texOff p) + texAdv }
                 writeIORef dirty True
                 writeIORef state Accept
             else do
-                writeIORef player $ GLPlayer (a', b')
+                writeIORef player $ p { delta = (a', b'), texOff = (texOff p) + texAdv }
                 writeIORef dirty True
 
 

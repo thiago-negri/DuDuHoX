@@ -48,7 +48,6 @@ initGL (DuDuHoXGLContext{..}) = do
 
 loadTextures :: IO DuDuHoXGLTextures
 loadTextures = do
-    GL.texture GL.Texture2D $= GL.Enabled
     (bTexName:_) <- GL.genObjectNames 1
     GL.textureBinding GL.Texture2D $= Just bTexName
     GL.textureFilter GL.Texture2D $= ((GL.Linear', Nothing), GL.Linear')
@@ -56,16 +55,22 @@ loadTextures = do
     GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.ClampToEdge)
     _ <- GLFW.loadTexture2D "data/texture/background.tga" [GLFW.BuildMipMaps]
 
-    (pTexName:_) <- GL.genObjectNames 1
-    GL.textureBinding GL.Texture2D $= Just pTexName
+    (pTex1Name:pTex2Name:_) <- GL.genObjectNames 2
+    GL.textureBinding GL.Texture2D $= Just pTex1Name
     GL.textureFilter GL.Texture2D $= ((GL.Linear', Nothing), GL.Linear')
     GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.ClampToEdge)
     GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.ClampToEdge)
-    _ <- GLFW.loadTexture2D "data/texture/player.tga" [GLFW.BuildMipMaps]
+    _ <- GLFW.loadTexture2D "data/texture/player/player1.tga" [GLFW.BuildMipMaps]
+    GL.textureBinding GL.Texture2D $= Just pTex2Name
+    GL.textureFilter GL.Texture2D $= ((GL.Linear', Nothing), GL.Linear')
+    GL.textureWrapMode GL.Texture2D GL.S $= (GL.Repeated, GL.ClampToEdge)
+    GL.textureWrapMode GL.Texture2D GL.T $= (GL.Repeated, GL.ClampToEdge)
+    _ <- GLFW.loadTexture2D "data/texture/player/player2.tga" [GLFW.BuildMipMaps]
     
+    let pTex = pTex1Name:pTex2Name:pTex
     return DuDuHoXGLTextures {
         backgroundTex = bTexName,
-        playerTex = pTexName
+        playerTex = pTex
     }
 
 releaseGL :: IO ()

@@ -9,13 +9,14 @@ import           DuDuHoX.World.Types
 
 data GLPlayer = GLPlayer {
     delta :: (GL.GLfloat, GL.GLfloat) -- ^ Player delta
+   ,texOff :: Double
 }
 
 data GLState = Accept | Render deriving (Eq)
 
 data DuDuHoXGLTextures = DuDuHoXGLTextures {
     backgroundTex :: GL.TextureObject -- ^ Texture used for background
-   ,playerTex :: GL.TextureObject -- ^ Texture used for player
+   ,playerTex :: [GL.TextureObject] -- ^ Texture used for player
 }
 
 data DuDuHoXGLContext = DuDuHoXGLContext {
@@ -34,7 +35,7 @@ mkContext world' = do
     quit' <- newIORef False
     userInput' <- newIORef Nothing
     textures' <- newIORef Nothing
-    player' <- newIORef $ GLPlayer (0, 0)
+    player' <- newIORef $ GLPlayer (0, 0) 0
     state' <- newIORef Accept
     return DuDuHoXGLContext {
         dirty = dirty',

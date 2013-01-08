@@ -40,7 +40,7 @@ getWorld :: IO World
 getWorld = do
     putStr "Map name (maze | easyWorld): "
     hFlush stdout
-    fileName <- liftM (("data/maps/" ++) . (++ ".ddh")) getLine
+    fileName <- liftM (("data/map/" ++) . (++ ".ddh")) getLine
     fileExists <- doesFileExist fileName
     if fileExists
         then do

@@ -40,9 +40,11 @@ loop (c@DuDuHoXGLContext{..}) = do
         GLFW.swapBuffers
         writeIORef dirty False
 
+    advanceFrame c
+    
     case state' of
         Accept -> acceptInput c
-        Render -> advanceFrame c
+        _ -> return ()
 
     -- check if we need to quit the loop
     q <- readIORef quit
@@ -75,7 +77,8 @@ acceptInput (DuDuHoXGLContext{..}) = do
             unless (won (vWorld world')) $
                 let newWorld = updateWorld world' (movePlayer (vWorld world') m)
                 in do writeIORef world newWorld
-                      writeIORef player . GLPlayer $ mkDelta world' newWorld
+                      pl <- readIORef player
+                      writeIORef player $ pl { delta = mkDelta world' newWorld }
                       writeIORef state Render
                       GLFW.time $= 0
                       writeIORef dirty True
