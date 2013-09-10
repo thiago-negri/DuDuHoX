@@ -5,7 +5,6 @@ module DuDuHoX.OpenGL.Loop where
 import           Control.Monad
 import           Data.IORef
 
-import           Graphics.Rendering.OpenGL (($=))
 import qualified Graphics.Rendering.OpenGL as GL
 import qualified Graphics.UI.GLFW          as GLFW
 
@@ -100,7 +99,7 @@ acceptInput (DuDuHoXGLContext{..}) = do
                       pl <- readIORef player
                       writeIORef player $ pl { delta = mkDelta world' newWorld }
                       writeIORef state Render
-                      GLFW.time $= 0
+                      GLFW.time GL.$= 0
                       writeIORef dirty True
         _ -> return ()
 
